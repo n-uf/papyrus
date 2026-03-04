@@ -32,6 +32,17 @@ export interface DocTocEntry {
 }
 
 /**
+ * Document category for sidebar grouping
+ */
+export type DocCategory = "investor-pitch" | "user-docs" | "partners";
+
+export const DOC_CATEGORY_LABELS: Record<DocCategory, string> = {
+  "investor-pitch": "Investor Pitch",
+  "user-docs": "User Docs",
+  partners: "Partners",
+};
+
+/**
  * Document metadata for dossier display
  */
 export interface DocMeta {
@@ -41,6 +52,8 @@ export interface DocMeta {
   pageCount: number;
   /** Table of contents entries */
   toc: DocTocEntry[];
+  /** Sidebar category grouping */
+  category?: DocCategory;
   /** Document description (optional) */
   description?: string;
   /** Last updated date (optional) */

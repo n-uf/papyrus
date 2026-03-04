@@ -49,6 +49,7 @@ export {
 export type {
   AnnotationExplorerFigureProps,
   ControlTrayFigureProps,
+  DocCategory,
   DocMeta,
   DocPageProps,
   DocRegistry,
@@ -60,3 +61,5 @@ export type {
   TaxonExplorerFigureProps,
   UserManualFigures,
 } from "./doc-dossier-types";
+
+export { DOC_CATEGORY_LABELS } from "./doc-dossier-types";
