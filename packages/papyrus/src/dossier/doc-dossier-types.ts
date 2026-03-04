@@ -2,7 +2,7 @@
  * Doc Registry Types
  *
  * Type definitions for document registration and lookup.
- * UI components have moved to @finfactory/kavun (BareDossier).
+ * UI components have moved to @pdfized-rix/kavun (BareDossier).
  */
 
 import type React from "react";
@@ -58,7 +58,7 @@ export interface DocMeta {
  * Injected by the monorepo via registerDoc; renders a static placeholder
  * in the standalone viewer when not provided.
  *
- * Must be a subtype of DossierFullShowcaseProps from @finfactory/harbuz.
+ * Must be a subtype of DossierFullShowcaseProps from @pdfized-rix/harbuz.
  */
 export interface DossierFullFigureProps {
   title?: string;
@@ -73,7 +73,7 @@ export interface DossierFullFigureProps {
 
 /**
  * Props for the dossier chrome figure (DossierChromeShowcase).
- * Must be a subtype of DossierChromeShowcaseProps from @finfactory/harbuz.
+ * Must be a subtype of DossierChromeShowcaseProps from @pdfized-rix/harbuz.
  */
 export interface DossierChromeFigureProps {
   title?: string;
@@ -84,7 +84,7 @@ export interface DossierChromeFigureProps {
 
 /**
  * Props for the dossier titlebar figure (DossierTitlebarShowcase).
- * Must be a subtype of DossierTitlebarShowcaseProps from @finfactory/harbuz.
+ * Must be a subtype of DossierTitlebarShowcaseProps from @pdfized-rix/harbuz.
  */
 export interface DossierTitlebarFigureProps {
   title?: string;
@@ -94,7 +94,7 @@ export interface DossierTitlebarFigureProps {
 
 /**
  * Props for the control tray figure (ControlTrayLayoutShowcase).
- * Must be a subtype of ControlTrayLayoutShowcaseProps from @finfactory/harbuz.
+ * Must be a subtype of ControlTrayLayoutShowcaseProps from @pdfized-rix/harbuz.
  */
 export interface ControlTrayFigureProps {
   variant?:
@@ -111,7 +111,7 @@ export interface ControlTrayFigureProps {
 
 /**
  * Props for the annotation explorer figure (AnnotationExplorerShowcase).
- * Must be a subtype of AnnotationExplorerShowcaseProps from @finfactory/harbuz.
+ * Must be a subtype of AnnotationExplorerShowcaseProps from @pdfized-rix/harbuz.
  */
 export interface AnnotationExplorerFigureProps {
   variant?: "empty" | "with-data";
@@ -123,7 +123,7 @@ export interface AnnotationExplorerFigureProps {
 
 /**
  * Props for the taxon explorer figure (TaxonExplorerShowcase).
- * Must be a subtype of TaxonExplorerShowcaseProps from @finfactory/harbuz.
+ * Must be a subtype of TaxonExplorerShowcaseProps from @pdfized-rix/harbuz.
  */
 export interface TaxonExplorerFigureProps {
   title?: string;
