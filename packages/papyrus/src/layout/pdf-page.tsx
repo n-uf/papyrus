@@ -16,7 +16,7 @@ export function PDFPage({
   return (
     <div
       id={id}
-      className="pdf-page relative overflow-hidden flex flex-col"
+      className="pdf-page relative flex flex-col"
       style={{ background: "#f3f4f6" }}
     >
       {children}

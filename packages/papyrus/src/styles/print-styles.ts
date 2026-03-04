@@ -16,16 +16,32 @@ export const printStyles = `
   @media print {
     html, body {
       width: 210mm;
-      height: 297mm;
+      height: auto !important;
+      overflow: visible !important;
       margin: 0;
       padding: 0;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
     
+    .pdf-container {
+      background: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      min-height: 0 !important;
+      overflow: visible !important;
+    }
+    
     .pdf-page {
+      width: 210mm;
+      height: 297mm;
+      overflow: visible !important;
       page-break-after: always;
+      break-after: page;
       page-break-inside: avoid;
+      break-inside: avoid-page;
+      margin: 0 !important;
+      box-shadow: none !important;
     }
     
     .pdf-page:last-child {
@@ -34,6 +50,10 @@ export const printStyles = `
     
     .no-print {
       display: none !important;
+    }
+
+    [class*="opacity-"] {
+      opacity: 1 !important;
     }
     
     .avoid-break {

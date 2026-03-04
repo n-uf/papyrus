@@ -98,7 +98,11 @@ export function Logo({
           )}
           <span
             className="logo-name"
-            style={{ fontSize: nameFontSize, display: "flex", alignItems: "center" }}
+            style={{
+              fontSize: nameFontSize,
+              display: "flex",
+              alignItems: "center",
+            }}
           >
             <span className="pdf-text-p">P</span>
             <span className="pdf-text-d">D</span>
@@ -157,9 +161,15 @@ export function Logo({
 }
 
 export const LogoVariants = {
-  Home: (props: Omit<LogoProps, "variant">) => <Logo {...props} variant="home" />,
-  Blog: (props: Omit<LogoProps, "variant">) => <Logo {...props} variant="blog" />,
-  Surface: (props: Omit<LogoProps, "variant">) => <Logo {...props} variant="surface" />,
+  Home: (props: Omit<LogoProps, "variant">) => (
+    <Logo {...props} variant="home" />
+  ),
+  Blog: (props: Omit<LogoProps, "variant">) => (
+    <Logo {...props} variant="blog" />
+  ),
+  Surface: (props: Omit<LogoProps, "variant">) => (
+    <Logo {...props} variant="surface" />
+  ),
 } as const;
 
 export default Logo;
