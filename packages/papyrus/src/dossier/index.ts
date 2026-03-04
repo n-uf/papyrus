@@ -1,0 +1,62 @@
+/**
+ * Doc Registry Module
+ *
+ * Document registration and lookup for web-based documentation.
+ * UI components have moved to @finfactory/kavun (BareDossier).
+ *
+ * @example
+ * ```tsx
+ * import { registerDoc } from "@finfactory/doc-ui/dossier";
+ * import { UserManualPage } from "@finfactory/docs/user-manual";
+ *
+ * // Register documents at app startup
+ * registerDoc({
+ *   id: "user-manual",
+ *   meta: {
+ *     title: "AI Redaction User Manual",
+ *     pageCount: 12,
+ *     toc: [
+ *       { id: "1", title: "1. Toolbar", page: 2, level: 0 },
+ *     ],
+ *   },
+ *   component: UserManualPage,
+ * });
+ *
+ * // Use with BareDossier from @finfactory/kavun
+ * import { BareDossier } from "@finfactory/kavun";
+ * <BareDossier docId="user-manual" />
+ * ```
+ */
+
+// =============================================================================
+// REGISTRY
+// =============================================================================
+
+export {
+  createDocRegistry,
+  docRegistry,
+  getDocComponent,
+  getDocMeta,
+  getRegisteredDocIds,
+  hasDoc,
+  registerDoc,
+} from "./doc-registry";
+
+// =============================================================================
+// TYPES
+// =============================================================================
+
+export type {
+  AnnotationExplorerFigureProps,
+  ControlTrayFigureProps,
+  DocMeta,
+  DocPageProps,
+  DocRegistry,
+  DocTocEntry,
+  DossierChromeFigureProps,
+  DossierFullFigureProps,
+  DossierTitlebarFigureProps,
+  RegisteredDoc,
+  TaxonExplorerFigureProps,
+  UserManualFigures,
+} from "./doc-dossier-types";
