@@ -1,10 +1,10 @@
 {
-  "name": "@pdfized-rix/doc-ui",
+  "name": "@pdfized/doc-ui",
   "version": "1.0.0",
   "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/pdfized-rix/pdf-n-docs.git",
+    "url": "https://github.com/pdfized/pdf-n-docs.git",
     "directory": "packages/doc-ui"
   },
   "publishConfig": {
@@ -29,7 +29,7 @@
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
-    "@pdfized-rix/typescript-config": "workspace:*",
+    "@pdfized/typescript-config": "workspace:*",
     "@types/node": "^25.0.9",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
