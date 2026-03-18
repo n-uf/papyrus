@@ -2,12 +2,12 @@
  * Doc Registry Module
  *
  * Document registration and lookup for web-based documentation.
- * UI components have moved to @pdfized-rix/kavun (BareDossier).
+ * UI components have moved to @workspace/kavun (BareDossier).
  *
  * @example
  * ```tsx
- * import { registerDoc } from "@pdfized-rix/doc-ui/dossier";
- * import { UserManualPage } from "@pdfized-rix/docs/user-manual";
+ * import { registerDoc } from "@pdfized/doc-ui/dossier";
+ * import { UserManualPage } from "@pdfized/docs/user-manual";
  *
  * // Register documents at app startup
  * registerDoc({
@@ -22,8 +22,8 @@
  *   component: UserManualPage,
  * });
  *
- * // Use with BareDossier from @pdfized-rix/kavun
- * import { BareDossier } from "@pdfized-rix/kavun";
+ * // Use with BareDossier from @workspace/kavun
+ * import { BareDossier } from "@workspace/kavun";
  * <BareDossier docId="user-manual" />
  * ```
  */

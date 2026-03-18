@@ -2,7 +2,7 @@
 // DOC-UI - Generic documentation UI primitives
 // =============================================================================
 // Reusable components for PDF-ready documentation and printable pages.
-// For product-specific components, use @pdfized-rix/docs instead.
+// For product-specific components, use @pdfized/docs instead.
 
 // =============================================================================
 // INDICATOR

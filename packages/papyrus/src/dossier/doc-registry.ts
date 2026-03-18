@@ -8,8 +8,8 @@
  * @example
  * ```tsx
  * // Register documents at app init
- * import { docRegistry } from "@pdfized-rix/doc-ui/dossier";
- * import { UserManualPage } from "@pdfized-rix/docs/user-manual";
+ * import { docRegistry } from "@pdfized/doc-ui/dossier";
+ * import { UserManualPage } from "@pdfized/docs/user-manual";
  *
  * docRegistry.register({
  *   id: "user-manual",
