@@ -25,12 +25,12 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "clsx": "^2.1.1",
-    "tailwind-merge": "^3.4.0"
+    "clsx": "catalog:",
+    "tailwind-merge": "catalog:"
   },
   "devDependencies": {
     "@pdfized/typescript-config": "workspace:*",
-    "@types/node": "^25.0.9",
+    "@types/node": "^25.5.0",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "react": "catalog:",
