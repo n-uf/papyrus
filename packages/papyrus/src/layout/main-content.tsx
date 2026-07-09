@@ -16,7 +16,7 @@ export function MainContent({
 }): React.ReactNode {
   return (
     <div
-      className="pt-6 pr-6 pb-6 flex-1 flex flex-col"
+      className="pdf-main-content pt-6 pr-6 pb-6 flex-1 flex flex-col"
       style={{ paddingLeft: `${sidebarWidth}px` }}
     >
       {children}

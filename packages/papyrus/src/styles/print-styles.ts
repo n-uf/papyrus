@@ -48,6 +48,15 @@ export const printStyles = `
       page-break-after: auto;
     }
     
+    /* Flex children default to min-height:auto, so a content box taller than
+       the fixed A4 page (e.g. due to its own bottom padding) overflows the
+       page and Chromium's print fragmentation slices the bottom-most block
+       onto the next sheet. Let it shrink to the page and clip the excess. */
+    .pdf-main-content {
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+    
     .no-print {
       display: none !important;
     }
@@ -60,8 +69,17 @@ export const printStyles = `
       page-break-inside: avoid;
     }
     
+    /* Chromium's PDF renderer skips painting elements with backdrop-filter,
+       dropping the whole panel (and its text) from the exported PDF. It also
+       composites the panel's translucent fill over white instead of the page
+       fill, so flatten it to the color the glass effect resolves to on screen:
+       rgba(243,244,246,0.75) over the #f3f4f6 page fill = #f3f4f6. */
     .glass-panel-print {
-      background: rgba(255, 255, 255, 0.85) !important;
+      background: rgb(243, 244, 246) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      box-shadow: none !important;
+      border-color: rgba(0, 0, 0, 0.06) !important;
     }
     
     /* Flatten shadow effects for accurate PDF rendering */
