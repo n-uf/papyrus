@@ -10,10 +10,13 @@
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
-  "description": "Reusable UI components for documentation and printable PDF pages",
+  "description": "Papyrus engine: content-free UI building blocks, document registry and PDF export for documents rendered as HTML and PDF",
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
+  "bin": {
+    "papyrus": "./src/pdf/cli.js"
+  },
   "files": [
     "src",
     "package.json",
@@ -36,11 +39,23 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "tailwindcss": "catalog:",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "playwright": "^1.58.2",
+    "vite": "^8.0.0"
   },
   "peerDependencies": {
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "playwright": "^1.40.0",
+    "vite": ">=5"
+  },
+  "peerDependenciesMeta": {
+    "playwright": {
+      "optional": true
+    },
+    "vite": {
+      "optional": true
+    }
   },
   "exports": {
     ".": {
@@ -94,6 +109,14 @@
     "./dossier": {
       "types": "./src/dossier/index.ts",
       "default": "./src/dossier/index.ts"
+    },
+    "./pdf": {
+      "types": "./src/pdf/index.d.ts",
+      "default": "./src/pdf/index.js"
+    },
+    "./vite": {
+      "types": "./src/vite/index.d.ts",
+      "default": "./src/vite/index.js"
     }
   }
 }

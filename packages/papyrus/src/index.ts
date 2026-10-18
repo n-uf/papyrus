@@ -2,7 +2,8 @@
 // DOC-UI - Generic documentation UI primitives
 // =============================================================================
 // Reusable components for PDF-ready documentation and printable pages.
-// For product-specific components, use @pdfized/docs instead.
+// Content-free: document content, branding and copy live in the documents
+// package (e.g. @pdfized/docs), never here.
 
 // =============================================================================
 // INDICATOR
@@ -14,7 +15,7 @@ export * from "./indicator";
 // =============================================================================
 // LOGO
 // =============================================================================
-// PDFIZED.COM logotype for page headers and footers
+// Brand-agnostic logotype frame for page headers and footers
 
 export * from "./logo";
 

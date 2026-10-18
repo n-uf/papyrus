@@ -2,6 +2,10 @@
 
 import React from "react";
 import { cn } from "../utils/cn";
+import {
+  LEGACY_VARIANT_TEXT_LINES,
+  legacyDefaultWordmark,
+} from "../dossier/legacy";
 
 // =============================================================================
 // TYPES
@@ -12,7 +16,21 @@ export type LogoLayout = "stacked" | "inline";
 
 export interface LogoProps {
   className?: string;
+  /** Tagline lines rendered above (stacked) or before (inline) the wordmark. */
   textLines?: string[];
+  /**
+   * Wordmark content. Rendered inside the `.logo-name` element. The host
+   * application owns the brand: pass its wordmark (and style it via the
+   * `logo-*` classes) from the document package. When omitted, a deprecated
+   * fallback (the legacy wordmark, see dossier/legacy.ts) is rendered so
+   * older document packages keep working.
+   */
+  name?: React.ReactNode;
+  /**
+   * Tagline lines per `variant`, used when `textLines` is not provided.
+   * Hosts supply their own copy; defaults to the deprecated legacy set.
+   */
+  variantTextLines?: Record<string, string[]>;
   href?: string;
   variant?: "home" | "blog" | "surface";
   onClick?: () => void;
@@ -36,22 +54,22 @@ const SIZE_SCALES: Record<LogoSize, { tagline: string; name: string }> = {
   lg: { tagline: "1.1rem", name: "1.4rem" },
 };
 
-const VARIANT_TEXT_LINES: Record<string, string[]> = {
-  home: ["AUTOMATICALLY", "WITH"],
-  blog: ["BLOG:", "TIPS 'n TRICKS BY"],
-  surface: ["REDACT WITH"],
-};
-
 // =============================================================================
 // COMPONENT
 // =============================================================================
 
 /**
- * Logo — PDFIZED.COM logotype for documentation page headers and footers.
+ * Logo — brand-agnostic logotype frame for document page headers and footers.
+ *
+ * Renders tagline lines plus a wordmark (`name`) using the `logo-*` CSS
+ * classes provided by the host. The brand itself (wordmark and taglines)
+ * is supplied by the document package.
  */
 export function Logo({
   className,
   textLines: propTextLines,
+  name: propName,
+  variantTextLines = LEGACY_VARIANT_TEXT_LINES,
   href,
   variant = "home",
   onClick,
@@ -61,7 +79,8 @@ export function Logo({
   layout = "stacked",
   inlineSeparator = "·",
 }: LogoProps): React.ReactNode {
-  const textLines = propTextLines ?? VARIANT_TEXT_LINES[variant] ?? [];
+  const textLines = propTextLines ?? variantTextLines[variant] ?? [];
+  const name = propName ?? legacyDefaultWordmark();
   const sizeScale = SIZE_SCALES[size];
   const taglineFontSize = fontSize ?? sizeScale.tagline;
   const nameFontSize = fontSize ? `calc(${fontSize} * 1.33)` : sizeScale.name;
@@ -104,10 +123,7 @@ export function Logo({
               alignItems: "center",
             }}
           >
-            <span className="pdf-text-p">P</span>
-            <span className="pdf-text-d">D</span>
-            <span className="pdf-text-f">F</span>
-            <span className="logo-ized">IZED.COM</span>
+            {name}
           </span>
         </div>
       </div>
@@ -124,10 +140,7 @@ export function Logo({
             </div>
           ))}
           <div className="logo-name" style={{ fontSize: nameFontSize }}>
-            <span className="pdf-text-p">P</span>
-            <span className="pdf-text-d">D</span>
-            <span className="pdf-text-f">F</span>
-            <span className="logo-ized">IZED.COM</span>
+            {name}
           </div>
         </div>
       </div>
