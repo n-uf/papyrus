@@ -4,6 +4,8 @@ export interface PapyrusDocEntry {
   id: string;
   /** Output file name; defaults to `${id}.pdf`. */
   filename?: string;
+  /** Expected PDF page count; overrides the page's own `data-papyrus-page-count`. */
+  pageCount?: number;
 }
 
 export interface PapyrusConfig {
@@ -24,6 +26,8 @@ export interface RenderPdfOptions {
   timeoutMs?: number;
   /** Print CSS injected before printing. Default {@link PDF_PRINT_CSS}. */
   css?: string;
+  /** Fail unless the PDF has exactly this many pages. */
+  expectedPages?: number;
 }
 
 export interface ExportPdfsOptions extends RenderPdfOptions {
@@ -44,6 +48,8 @@ export const PDF_PRINT_CSS: string;
 export function loadPlaywright(): Promise<typeof import("playwright")>;
 export function launchBrowser(): Promise<Browser>;
 export function buildDocUrl(baseUrl: string, docUrl: string | undefined, id: string): string;
+/** Count pages in a PDF buffer. */
+export function countPdfPages(pdf: Uint8Array): number;
 export function renderPdf(browser: Browser, url: string, options?: RenderPdfOptions): Promise<Buffer>;
 export function normalizeDocs(
   docs: Array<string | PapyrusDocEntry> | undefined,

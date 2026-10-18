@@ -1,13 +1,15 @@
 import React from "react";
 import { BeveledPanel } from "../typography/content-panels";
 import { CarvedText } from "../typography/carved-text";
+import { LEGACY_DEFAULT_COPYRIGHT } from "../dossier/legacy";
 
 /**
  * DocumentFooter - Reusable footer for PDF documents
  *
  * @param logo - Optional logo element (e.g., a brand wordmark built on <Logo />)
  * @param title - Document title
- * @param copyright - Copyright / legal line shown under the title (omitted when not provided)
+ * @param copyright - Copyright / legal line shown under the title. When undefined a
+ *   deprecated legacy default is used; pass "" to omit it.
  * @param lastUpdated - Optional last updated date
  */
 export function DocumentFooter({
@@ -22,7 +24,7 @@ export function DocumentFooter({
   lastUpdated?: string;
 }): React.ReactNode {
   const updatedText = lastUpdated ? `Last updated: ${lastUpdated}` : "";
-  const metaText = [copyright, updatedText].filter(Boolean).join(" • ");
+  const metaText = [copyright ?? LEGACY_DEFAULT_COPYRIGHT, updatedText].filter(Boolean).join(" • ");
 
   return (
     <BeveledPanel className="mt-auto !py-2">

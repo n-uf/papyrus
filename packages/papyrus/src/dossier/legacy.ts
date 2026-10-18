@@ -7,10 +7,16 @@
  * now live in `@pdfized/docs` (`UserManualFigures` etc. in the user-manual
  * module, `PDFIZED_DOC_CATEGORY_LABELS` at the package root).
  *
+ * It also holds the PDFized defaults that `Logo` and `DocumentFooter` fall
+ * back to when a caller omits `name` / `variantTextLines` / `copyright`
+ * (published `@pdfized/docs` <= 1.0.9 relies on this). New documents pass
+ * these explicitly (see `PdfizedLogo` and `PDFIZED_COPYRIGHT` in
+ * `@pdfized/docs`).
+ *
  * This file is deleted when the engine moves to `@n-uf/papyrus`.
  */
 
-import type React from "react";
+import React from "react";
 
 /**
  * Props for the full dossier anatomy figure (DossierFullShowcase).
@@ -112,3 +118,29 @@ export const DOC_CATEGORY_LABELS: Record<string, string> = {
   "user-docs": "User Docs",
   partners: "Partners",
 };
+
+// =============================================================================
+// FALLBACK DEFAULTS (internal; used by Logo and DocumentFooter)
+// =============================================================================
+
+/** @deprecated Default footer legal line used when `copyright` is omitted. */
+export const LEGACY_DEFAULT_COPYRIGHT = "© 2026 PDFized";
+
+/** @deprecated Default tagline lines per Logo variant. */
+export const LEGACY_VARIANT_TEXT_LINES: Record<string, string[]> = {
+  home: ["AUTOMATICALLY", "WITH"],
+  blog: ["BLOG:", "TIPS 'n TRICKS BY"],
+  surface: ["REDACT WITH"],
+};
+
+/** @deprecated Default wordmark used when Logo's `name` is omitted. */
+export function legacyDefaultWordmark(): React.ReactNode {
+  return React.createElement(
+    React.Fragment,
+    null,
+    React.createElement("span", { className: "pdf-text-p" }, "P"),
+    React.createElement("span", { className: "pdf-text-d" }, "D"),
+    React.createElement("span", { className: "pdf-text-f" }, "F"),
+    React.createElement("span", { className: "logo-ized" }, "IZED.COM"),
+  );
+}

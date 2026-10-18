@@ -79,10 +79,27 @@ export function buildDocUrl(baseUrl, docUrl, id) {
 }
 
 /**
+ * Count pages in a PDF buffer by its page objects (`/Type /Page`, not
+ * `/Type /Pages`). Chromium's PDF writer emits them uncompressed.
+ */
+export function countPdfPages(pdf) {
+  const text = Buffer.from(pdf).toString("latin1");
+  return (text.match(/\/Type\s*\/Page(?![s\w])/g) ?? []).length;
+}
+
+/**
  * Render one URL to a PDF buffer.
+ *
+ * Fails (so a bad render can never be saved or committed) when the page has
+ * no `.pdf-page` elements (e.g. "document not found"), when the PDF's page
+ * count differs from the number of `.pdf-page` elements, or when it differs
+ * from the expected count. The expected count is `options.expectedPages`, else
+ * the `data-papyrus-page-count` attribute the viewer puts on the document
+ * (the document's `meta.pageCount`), when present.
+ *
  * @param {import("playwright").Browser} browser
  * @param {string} url
- * @param {{ viewport?: {width:number,height:number}, settleMs?: number, timeoutMs?: number, css?: string }} [options]
+ * @param {{ viewport?: {width:number,height:number}, settleMs?: number, timeoutMs?: number, css?: string, expectedPages?: number }} [options]
  * @returns {Promise<Buffer>}
  */
 export async function renderPdf(browser, url, options = {}) {
@@ -98,24 +115,45 @@ export async function renderPdf(browser, url, options = {}) {
     await page.waitForTimeout(settleMs);
     await page.emulateMedia({ media: "print" });
     await page.addStyleTag({ content: css });
+    const dom = await page.evaluate(() => {
+      const attr = document
+        .querySelector("[data-papyrus-page-count]")
+        ?.getAttribute("data-papyrus-page-count");
+      return {
+        pages: document.querySelectorAll(".pdf-page").length,
+        declared: attr ? Number(attr) : null,
+      };
+    });
+    const expected = options.expectedPages ?? dom.declared;
     const pdf = await page.pdf({
       format: "A4",
       printBackground: true,
       displayHeaderFooter: false,
       margin: { top: "0", right: "0", bottom: "0", left: "0" },
     });
-    return Buffer.from(pdf);
+    const buffer = Buffer.from(pdf);
+    const actual = countPdfPages(buffer);
+    if (dom.pages === 0) {
+      throw new Error(`${url}: no .pdf-page elements rendered (document not found or blank page)`);
+    }
+    if (actual !== dom.pages) {
+      throw new Error(`${url}: PDF has ${actual} page(s) but the document renders ${dom.pages} .pdf-page element(s)`);
+    }
+    if (expected != null && actual !== expected) {
+      throw new Error(`${url}: PDF has ${actual} page(s), expected ${expected}`);
+    }
+    return buffer;
   } finally {
     await page.close();
   }
 }
 
-/** Normalise `docs` entries (string | {id, filename?}) to {id, filename}. */
+/** Normalise `docs` entries (string | {id, filename?, pageCount?}) to {id, filename, pageCount?}. */
 export function normalizeDocs(docs) {
   return (docs ?? []).map((entry) => {
     const doc = typeof entry === "string" ? { id: entry } : entry;
     if (!doc || !doc.id) throw new Error(`Invalid docs entry: ${JSON.stringify(entry)}`);
-    return { id: doc.id, filename: doc.filename ?? `${doc.id}.pdf` };
+    return { id: doc.id, filename: doc.filename ?? `${doc.id}.pdf`, pageCount: doc.pageCount };
   });
 }
 
@@ -154,7 +192,7 @@ export function readConfig(configPath) {
  * @param {object} options
  * @param {string} options.baseUrl     Running server, e.g. http://localhost:5173
  * @param {string} options.outDir      Absolute output folder
- * @param {Array<string|{id:string,filename?:string}>} options.docs
+ * @param {Array<string|{id:string,filename?:string,pageCount?:number}>} options.docs
  * @param {string} [options.docUrl]    URL template, default "/docs/{id}?print=true"
  * @param {string} [options.only]      Restrict to one doc id
  * @param {(msg: string) => void} [options.log]
@@ -180,7 +218,10 @@ export async function exportPdfs(options) {
       const outputPath = path.join(outDir, doc.filename);
       log(`  ${doc.id} -> ${doc.filename}`);
       try {
-        const pdf = await renderPdf(browser, buildDocUrl(baseUrl, docUrl, doc.id), options);
+        const pdf = await renderPdf(browser, buildDocUrl(baseUrl, docUrl, doc.id), {
+          ...options,
+          expectedPages: doc.pageCount,
+        });
         fs.writeFileSync(outputPath, pdf);
         written.push(outputPath);
         log(`    ok ${(pdf.length / 1024).toFixed(0)} KB\n`);

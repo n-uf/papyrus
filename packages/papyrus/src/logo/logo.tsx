@@ -2,6 +2,10 @@
 
 import React from "react";
 import { cn } from "../utils/cn";
+import {
+  LEGACY_VARIANT_TEXT_LINES,
+  legacyDefaultWordmark,
+} from "../dossier/legacy";
 
 // =============================================================================
 // TYPES
@@ -17,12 +21,14 @@ export interface LogoProps {
   /**
    * Wordmark content. Rendered inside the `.logo-name` element. The host
    * application owns the brand: pass its wordmark (and style it via the
-   * `logo-*` classes) from the document package.
+   * `logo-*` classes) from the document package. When omitted, a deprecated
+   * fallback (the legacy wordmark, see dossier/legacy.ts) is rendered so
+   * older document packages keep working.
    */
   name?: React.ReactNode;
   /**
    * Tagline lines per `variant`, used when `textLines` is not provided.
-   * Hosts supply their own copy; doc-ui ships none.
+   * Hosts supply their own copy; defaults to the deprecated legacy set.
    */
   variantTextLines?: Record<string, string[]>;
   href?: string;
@@ -62,8 +68,8 @@ const SIZE_SCALES: Record<LogoSize, { tagline: string; name: string }> = {
 export function Logo({
   className,
   textLines: propTextLines,
-  name,
-  variantTextLines,
+  name: propName,
+  variantTextLines = LEGACY_VARIANT_TEXT_LINES,
   href,
   variant = "home",
   onClick,
@@ -73,7 +79,8 @@ export function Logo({
   layout = "stacked",
   inlineSeparator = "·",
 }: LogoProps): React.ReactNode {
-  const textLines = propTextLines ?? variantTextLines?.[variant] ?? [];
+  const textLines = propTextLines ?? variantTextLines[variant] ?? [];
+  const name = propName ?? legacyDefaultWordmark();
   const sizeScale = SIZE_SCALES[size];
   const taglineFontSize = fontSize ?? sizeScale.tagline;
   const nameFontSize = fontSize ? `calc(${fontSize} * 1.33)` : sizeScale.name;
