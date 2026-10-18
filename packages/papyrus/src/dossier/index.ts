@@ -5,7 +5,7 @@
  *
  * @example
  * ```tsx
- * import { registerDoc } from "@pdfized/doc-ui/dossier";
+ * import { registerDoc } from "@n-uf/papyrus/dossier";
  * import { MyDocPage } from "./my-doc";
  *
  * // Register documents at app startup
@@ -50,19 +50,3 @@ export type {
   DocTocEntry,
   RegisteredDoc,
 } from "./doc-dossier-types";
-
-// =============================================================================
-// LEGACY (deprecated, kept for backward compatibility)
-// =============================================================================
-
-export type {
-  AnnotationExplorerFigureProps,
-  ControlTrayFigureProps,
-  DossierChromeFigureProps,
-  DossierFullFigureProps,
-  DossierTitlebarFigureProps,
-  TaxonExplorerFigureProps,
-  UserManualFigures,
-} from "./legacy";
-
-export { DOC_CATEGORY_LABELS } from "./legacy";

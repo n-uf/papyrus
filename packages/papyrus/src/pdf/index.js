@@ -26,7 +26,7 @@ export const DEFAULT_BASE_URL = "http://localhost:5173";
 
 /**
  * Print-media overrides injected before printing. They target the
- * `.pdf-container` / `.pdf-page` structure produced by doc-ui's layout
+ * `.pdf-container` / `.pdf-page` structure produced by papyrus' layout
  * components.
  */
 export const PDF_PRINT_CSS = `

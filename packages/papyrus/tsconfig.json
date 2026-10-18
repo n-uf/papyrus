@@ -1,5 +1,5 @@
 {
-  "extends": "@pdfized/typescript-config/react-library.json",
+  "extends": "@n-uf/typescript-config/react-library.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

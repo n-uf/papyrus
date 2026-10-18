@@ -40,7 +40,7 @@ ${DEFAULT_CONFIG_FILE}:
     "outDir": "apps/viewer/public/docs",
     "baseUrl": "http://localhost:5173",
     "docUrl": "/docs/{id}?print=true",
-    "docs": ["user-manual", { "id": "gtm-thesis", "filename": "gtm-thesis.pdf" }]
+    "docs": ["user-manual", { "id": "annual-report", "filename": "annual-report-2026.pdf" }]
   }
 `;
 

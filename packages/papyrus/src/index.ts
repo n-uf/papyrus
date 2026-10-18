@@ -1,9 +1,9 @@
 // =============================================================================
-// DOC-UI - Generic documentation UI primitives
+// PAPYRUS - Documents engine: generic documentation UI primitives
 // =============================================================================
 // Reusable components for PDF-ready documentation and printable pages.
 // Content-free: document content, branding and copy live in the documents
-// package (e.g. @pdfized/docs), never here.
+// package, never here.
 
 // =============================================================================
 // INDICATOR

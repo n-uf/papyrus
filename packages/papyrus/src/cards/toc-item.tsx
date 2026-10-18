@@ -20,44 +20,51 @@ const tocLabelColors: Record<TOCLabelColor, { bg: string; border: string; badge:
 };
 
 /**
- * Get section color based on section type
- * Matches the SectionBadge color scheme
+ * Neutral accent used for TOC numbers when a section has no configured color.
  */
-function getSectionColor(section?: string): string {
-  if (!section) return "rgb(14, 116, 144)"; // Default cyan
+export const TOC_DEFAULT_SECTION_COLOR = "rgb(71, 85, 105)";
+
+/**
+ * Section name -> number color. Keys are matched case-insensitively against
+ * the `section` prop of {@link TOCItem}.
+ */
+export type TOCSectionColors = Record<string, string>;
+
+export interface TOCSectionColorOptions {
+  /** Section name -> color (CSS color string). */
+  sectionColors?: TOCSectionColors;
+  /** Used when the section is missing or not listed. Defaults to {@link TOC_DEFAULT_SECTION_COLOR}. */
+  defaultSectionColor?: string;
+  /**
+   * Custom lookup for rules a plain map cannot express (e.g. prefixes). Return
+   * `undefined` to fall through to `sectionColors`.
+   */
+  resolveSectionColor?: (section: string) => string | undefined;
+}
+
+/**
+ * Resolve the number color of a TOC entry from its section name.
+ *
+ * Order: `resolveSectionColor`, then `sectionColors` (case-insensitive), then
+ * `defaultSectionColor`, then {@link TOC_DEFAULT_SECTION_COLOR}.
+ */
+export function getTocSectionColor(
+  section: string | undefined,
+  { sectionColors, defaultSectionColor, resolveSectionColor }: TOCSectionColorOptions = {},
+): string {
+  const fallback = defaultSectionColor ?? TOC_DEFAULT_SECTION_COLOR;
+  if (!section) return fallback;
+
+  const custom = resolveSectionColor?.(section);
+  if (custom) return custom;
 
   const normalized = section.toLowerCase();
-
-  // Strategy (Market, Platform/Document OS): Cyan
-  if (
-    normalized === "market" ||
-    normalized === "platform" ||
-    normalized === "document os"
-  ) {
-    return "rgb(14, 116, 144)";
+  if (sectionColors) {
+    for (const [name, color] of Object.entries(sectionColors)) {
+      if (name.toLowerCase() === normalized) return color;
+    }
   }
-
-  // GTM: Muted teal
-  if (normalized === "gtm") {
-    return "rgb(0, 130, 140)";
-  }
-
-  // UX: Muted purple
-  if (normalized === "ux") {
-    return "rgb(100, 55, 135)";
-  }
-
-  // Roadmap (Turns, Summary): Slate blue
-  if (normalized.startsWith("turn") || normalized === "summary") {
-    return "rgb(71, 85, 105)";
-  }
-
-  // Appendix: Light gray
-  if (normalized === "appendix") {
-    return "rgb(80, 90, 100)";
-  }
-
-  return "rgb(14, 116, 144)"; // Default cyan
+  return fallback;
 }
 
 // =============================================================================
@@ -160,11 +167,15 @@ export function TOCEntry({
 }
 
 // =============================================================================
-// Classic TOC Component (used in gtm-thesis style)
+// Classic TOC Component (dotted leader, number tinted by section)
 // =============================================================================
 
 /**
  * TOCItem - Table of Contents entry (clickable)
+ *
+ * The number is tinted by `section`. Papyrus knows no section names: pass
+ * `sectionColors` (name -> color) or `resolveSectionColor`, otherwise the
+ * neutral {@link TOC_DEFAULT_SECTION_COLOR} is used.
  */
 export function TOCItem({
   number,
@@ -172,14 +183,21 @@ export function TOCItem({
   page,
   section,
   href,
+  sectionColors,
+  defaultSectionColor,
+  resolveSectionColor,
 }: {
   number: string;
   title: string;
   page: string;
   section?: string;
   href?: string;
-}): React.ReactNode {
-  const sectionColor = getSectionColor(section);
+} & TOCSectionColorOptions): React.ReactNode {
+  const sectionColor = getTocSectionColor(section, {
+    sectionColors,
+    defaultSectionColor,
+    resolveSectionColor,
+  });
 
   const content = (
     <div className="flex items-baseline gap-2 text-[14px] py-1">

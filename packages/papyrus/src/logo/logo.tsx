@@ -2,10 +2,6 @@
 
 import React from "react";
 import { cn } from "../utils/cn";
-import {
-  LEGACY_VARIANT_TEXT_LINES,
-  legacyDefaultWordmark,
-} from "../dossier/legacy";
 
 // =============================================================================
 // TYPES
@@ -21,18 +17,18 @@ export interface LogoProps {
   /**
    * Wordmark content. Rendered inside the `.logo-name` element. The host
    * application owns the brand: pass its wordmark (and style it via the
-   * `logo-*` classes) from the document package. When omitted, a deprecated
-   * fallback (the legacy wordmark, see dossier/legacy.ts) is rendered so
-   * older document packages keep working.
+   * `logo-*` classes) from the document package. When omitted, no wordmark
+   * is rendered.
    */
   name?: React.ReactNode;
   /**
    * Tagline lines per `variant`, used when `textLines` is not provided.
-   * Hosts supply their own copy; defaults to the deprecated legacy set.
+   * Hosts supply their own copy; there is no built-in tagline.
    */
   variantTextLines?: Record<string, string[]>;
   href?: string;
-  variant?: "home" | "blog" | "surface";
+  /** Key into `variantTextLines`. Defaults to "home". */
+  variant?: string;
   onClick?: () => void;
   /** Custom wrapper component (e.g. Next.js Link) */
   as?: React.ElementType;
@@ -69,7 +65,7 @@ export function Logo({
   className,
   textLines: propTextLines,
   name: propName,
-  variantTextLines = LEGACY_VARIANT_TEXT_LINES,
+  variantTextLines,
   href,
   variant = "home",
   onClick,
@@ -79,8 +75,8 @@ export function Logo({
   layout = "stacked",
   inlineSeparator = "·",
 }: LogoProps): React.ReactNode {
-  const textLines = propTextLines ?? variantTextLines[variant] ?? [];
-  const name = propName ?? legacyDefaultWordmark();
+  const textLines = propTextLines ?? variantTextLines?.[variant] ?? [];
+  const name = propName;
   const sizeScale = SIZE_SCALES[size];
   const taglineFontSize = fontSize ?? sizeScale.tagline;
   const nameFontSize = fontSize ? `calc(${fontSize} * 1.33)` : sizeScale.name;
@@ -115,16 +111,18 @@ export function Logo({
               </span>
             </>
           )}
-          <span
-            className="logo-name"
-            style={{
-              fontSize: nameFontSize,
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            {name}
-          </span>
+          {name != null && (
+            <span
+              className="logo-name"
+              style={{
+                fontSize: nameFontSize,
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              {name}
+            </span>
+          )}
         </div>
       </div>
     ) : (
@@ -139,9 +137,11 @@ export function Logo({
               {line}
             </div>
           ))}
-          <div className="logo-name" style={{ fontSize: nameFontSize }}>
-            {name}
-          </div>
+          {name != null && (
+            <div className="logo-name" style={{ fontSize: nameFontSize }}>
+              {name}
+            </div>
+          )}
         </div>
       </div>
     );

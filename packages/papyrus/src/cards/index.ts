@@ -8,5 +8,14 @@ export { KeyBadge } from "./key-badge";
 export { ProcessBadge } from "./process-badge";
 export { QuickRefItem } from "./quick-ref-item";
 export { SourceCard } from "./source-card";
-export { TOCEntry, TOCItem, TOCLabel, type TOCLabelColor } from "./toc-item";
+export {
+  getTocSectionColor,
+  TOC_DEFAULT_SECTION_COLOR,
+  TOCEntry,
+  TOCItem,
+  TOCLabel,
+  type TOCLabelColor,
+  type TOCSectionColorOptions,
+  type TOCSectionColors,
+} from "./toc-item";
 export { WorkflowStep } from "./workflow-step";

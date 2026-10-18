@@ -8,7 +8,7 @@
  * @example
  * ```tsx
  * // Register documents at app init
- * import { docRegistry } from "@pdfized/doc-ui/dossier";
+ * import { docRegistry } from "@n-uf/papyrus/dossier";
  * import { MyDocPage } from "./my-doc";
  *
  * docRegistry.register({
