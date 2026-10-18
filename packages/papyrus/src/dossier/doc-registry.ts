@@ -74,10 +74,27 @@ export function createDocRegistry(): DocRegistry {
 // =============================================================================
 
 /**
- * Global document registry instance.
- * Use this for most cases. Create custom registries for isolated contexts.
+ * Key under which the global registry is stored on `globalThis`.
+ *
+ * Papyrus ships TypeScript source, so an app can end up with two installed
+ * copies (for example the one a UI kit depends on and the one the app depends
+ * on). A module-level registry would then split in two: documents registered
+ * through one copy would not be found through the other. Sharing the instance
+ * through `Symbol.for` keeps one registry per JavaScript realm.
  */
-export const docRegistry: DocRegistry = createDocRegistry();
+const DOC_REGISTRY_KEY = Symbol.for("@n-uf/papyrus/docRegistry");
+
+function getGlobalRegistry(): DocRegistry {
+  const store = globalThis as unknown as Record<symbol, DocRegistry | undefined>;
+  return (store[DOC_REGISTRY_KEY] ??= createDocRegistry());
+}
+
+/**
+ * Global document registry instance, shared by every copy of papyrus loaded in
+ * the same realm. Use this for most cases. Create custom registries with
+ * {@link createDocRegistry} for isolated contexts.
+ */
+export const docRegistry: DocRegistry = getGlobalRegistry();
 
 // =============================================================================
 // HELPER FUNCTIONS

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import * as dossier from "./index";
-import { createDocRegistry } from "./doc-registry";
+import { createDocRegistry, docRegistry } from "./doc-registry";
 
 const doc = (id: string) => ({
   id,
@@ -26,6 +26,21 @@ describe("createDocRegistry", () => {
     registry.register(doc("a"));
     expect(warn).toHaveBeenCalledOnce();
     warn.mockRestore();
+  });
+});
+
+describe("docRegistry", () => {
+  it("is shared through globalThis, so a second copy of the module sees the same registry", async () => {
+    vi.resetModules();
+    const second = await import("./doc-registry");
+    expect(second.docRegistry).toBe(docRegistry);
+    second.registerDoc(doc("shared"));
+    expect(docRegistry.has("shared")).toBe(true);
+  });
+
+  it("is stored under Symbol.for('@n-uf/papyrus/docRegistry')", () => {
+    const store = globalThis as unknown as Record<symbol, unknown>;
+    expect(store[Symbol.for("@n-uf/papyrus/docRegistry")]).toBe(docRegistry);
   });
 });
 
