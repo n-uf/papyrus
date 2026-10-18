@@ -96,24 +96,6 @@ export const printStyles = `
       border-left-color: rgba(0, 0, 0, 0.06) !important;
     }
     
-    /* Harbuz showcase components - remove shadows for clean PDF */
-    .harbuz-showcase {
-      box-shadow: none !important;
-    }
-    
-    /* Zone label badges in dossier anatomy */
-    .zone-label-badge {
-      box-shadow: none !important;
-    }
-    
-    /* Harbuz internal components - remove glows for clean PDF */
-    .led-progress-fill,
-    .taxon-count-badge,
-    .taxon-toggle-btn,
-    .led-glow-dot {
-      box-shadow: none !important;
-    }
-    
     .carved-text {
       text-shadow: none !important;
     }

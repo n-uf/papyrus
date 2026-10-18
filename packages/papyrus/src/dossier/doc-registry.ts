@@ -9,23 +9,23 @@
  * ```tsx
  * // Register documents at app init
  * import { docRegistry } from "@pdfized/doc-ui/dossier";
- * import { UserManualPage } from "@pdfized/docs/user-manual";
+ * import { MyDocPage } from "./my-doc";
  *
  * docRegistry.register({
- *   id: "user-manual",
+ *   id: "my-doc",
  *   meta: {
- *     title: "AI Redaction User Manual",
+ *     title: "My Document",
  *     pageCount: 12,
  *     toc: [
- *       { id: "toolbar", title: "1. Toolbar", page: 2, level: 0 },
+ *       { id: "intro", title: "Introduction", page: 2, level: 0 },
  *       // ...
  *     ],
  *   },
- *   component: UserManualPage,
+ *   component: MyDocPage,
  * });
  *
  * // Later, look up by ID
- * const doc = docRegistry.get("user-manual");
+ * const doc = docRegistry.get("my-doc");
  * if (doc) {
  *   const { component: DocComponent, meta } = doc;
  *   return <DocComponent />;

@@ -2,29 +2,24 @@
  * Doc Registry Module
  *
  * Document registration and lookup for web-based documentation.
- * UI components have moved to @workspace/kavun (BareDossier).
  *
  * @example
  * ```tsx
  * import { registerDoc } from "@pdfized/doc-ui/dossier";
- * import { UserManualPage } from "@pdfized/docs/user-manual";
+ * import { MyDocPage } from "./my-doc";
  *
  * // Register documents at app startup
  * registerDoc({
- *   id: "user-manual",
+ *   id: "my-doc",
  *   meta: {
- *     title: "AI Redaction User Manual",
+ *     title: "My Document",
  *     pageCount: 12,
  *     toc: [
- *       { id: "1", title: "1. Toolbar", page: 2, level: 0 },
+ *       { id: "intro", title: "Introduction", page: 2, level: 0 },
  *     ],
  *   },
- *   component: UserManualPage,
+ *   component: MyDocPage,
  * });
- *
- * // Use with BareDossier from @workspace/kavun
- * import { BareDossier } from "@workspace/kavun";
- * <BareDossier docId="user-manual" />
  * ```
  */
 
@@ -47,19 +42,27 @@ export {
 // =============================================================================
 
 export type {
-  AnnotationExplorerFigureProps,
-  ControlTrayFigureProps,
   DocCategory,
+  DocFigures,
   DocMeta,
   DocPageProps,
   DocRegistry,
   DocTocEntry,
+  RegisteredDoc,
+} from "./doc-dossier-types";
+
+// =============================================================================
+// LEGACY (deprecated, kept for backward compatibility)
+// =============================================================================
+
+export type {
+  AnnotationExplorerFigureProps,
+  ControlTrayFigureProps,
   DossierChromeFigureProps,
   DossierFullFigureProps,
   DossierTitlebarFigureProps,
-  RegisteredDoc,
   TaxonExplorerFigureProps,
   UserManualFigures,
-} from "./doc-dossier-types";
+} from "./legacy";
 
-export { DOC_CATEGORY_LABELS } from "./doc-dossier-types";
+export { DOC_CATEGORY_LABELS } from "./legacy";

@@ -1,0 +1,74 @@
+/**
+ * Papyrus Vite plugin (dev server only).
+ *
+ * Intercepts requests for `/<routePrefix>/<id>.pdf` (default `/docs/<id>.pdf`),
+ * prints the document's print route with Playwright, writes the result into
+ * the public folder and serves it. Production builds use the committed static
+ * files directly. Requires the optional `playwright` peer dependency.
+ */
+
+import fs from "node:fs";
+import path from "node:path";
+import { buildDocUrl, launchBrowser, renderPdf } from "../pdf/index.js";
+
+/**
+ * @param {{ routePrefix?: string, docUrl?: string, logPrefix?: string }} [options]
+ * @returns {import("vite").Plugin}
+ */
+export function papyrusPdfPlugin(options = {}) {
+  const { routePrefix = "docs", docUrl, logPrefix = "[papyrus]" } = options;
+  const route = new RegExp(`^/${routePrefix.replace(/^\/|\/$/g, "")}/([\\w-]+)\\.pdf$`);
+  /** @type {import("playwright").Browser | null} */
+  let browser = null;
+
+  async function getBrowser() {
+    if (browser?.isConnected()) return browser;
+    browser = await launchBrowser();
+    return browser;
+  }
+
+  return {
+    name: "papyrus-pdf",
+    apply: "serve",
+
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const id = req.url?.split("?")[0]?.match(route)?.[1];
+        if (!id) return next();
+
+        const addr = server.httpServer?.address();
+        const port =
+          typeof addr === "object" && addr ? addr.port : (server.config.server.port ?? 5173);
+        const filePath = path.join(server.config.publicDir, routePrefix, `${id}.pdf`);
+
+        console.log(`${logPrefix} Generating ${id}.pdf ...`);
+        const start = Date.now();
+
+        getBrowser()
+          .then((b) => renderPdf(b, buildDocUrl(`http://localhost:${port}`, docUrl, id)))
+          .then((pdf) => {
+            fs.mkdirSync(path.dirname(filePath), { recursive: true });
+            fs.writeFileSync(filePath, pdf);
+            console.log(
+              `${logPrefix} ${id}.pdf ready (${((Date.now() - start) / 1000).toFixed(1)}s, ${(pdf.length / 1024).toFixed(0)} KB)`,
+            );
+            res.setHeader("Content-Type", "application/pdf");
+            res.setHeader("Content-Length", pdf.length.toString());
+            res.end(pdf);
+          })
+          .catch((err) => {
+            console.error(`${logPrefix} Generation failed:`, err);
+            res.statusCode = 500;
+            res.end(`PDF generation failed: ${err}`);
+          });
+      });
+    },
+
+    buildEnd() {
+      browser?.close().catch(() => {});
+      browser = null;
+    },
+  };
+}
+
+export default papyrusPdfPlugin;
