@@ -6,5 +6,5 @@ import { packageBoundaries } from "@n-uf/eslint-config/package-boundaries";
 export default [
   ...config,
   nodeFiles(["src/pdf/**/*.js", "src/vite/**/*.js"]),
-  ...packageBoundaries({ forbid: ["@n-uf/stem", "@n-uf/harbuz", "@n-uf/kavun"] }),
+  ...packageBoundaries({ forbid: ["@n-uf/angiospermae", "@n-uf/harbuz", "@n-uf/kavun"] }),
 ];
