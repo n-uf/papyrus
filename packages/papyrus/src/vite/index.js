@@ -5,6 +5,10 @@
  * prints the document's print route with Playwright, writes the result into
  * the public folder and serves it. Production builds use the committed static
  * files directly. Requires the optional `playwright` peer dependency.
+ *
+ * Without a working browser the committed PDF (if any) is served instead of an
+ * error, so downloads keep working in dev; HEAD answers from the committed
+ * file without generating (200 when it exists, 404 when not).
  */
 
 import fs from "node:fs";
@@ -41,6 +45,18 @@ export function papyrusPdfPlugin(options = {}) {
           typeof addr === "object" && addr ? addr.port : (server.config.server.port ?? 5173);
         const filePath = path.join(server.config.publicDir, routePrefix, `${id}.pdf`);
 
+        // HEAD (e.g. "is there a PDF?"): the committed file decides, nothing is generated
+        if (req.method === "HEAD") {
+          const exists = fs.existsSync(filePath);
+          res.statusCode = exists ? 200 : 404;
+          if (exists) {
+            res.setHeader("Content-Type", "application/pdf");
+            res.setHeader("Content-Length", fs.statSync(filePath).size.toString());
+          }
+          res.end();
+          return;
+        }
+
         console.log(`${logPrefix} Generating ${id}.pdf ...`);
         const start = Date.now();
 
@@ -57,6 +73,16 @@ export function papyrusPdfPlugin(options = {}) {
             res.end(pdf);
           })
           .catch((err) => {
+            // Fall back to the committed PDF (may be older than the source)
+            if (fs.existsSync(filePath)) {
+              const pdf = fs.readFileSync(filePath);
+              console.warn(`${logPrefix} Generation failed, serving the committed ${id}.pdf:`, err?.message ?? err);
+              res.setHeader("Content-Type", "application/pdf");
+              res.setHeader("Content-Length", pdf.length.toString());
+              res.setHeader("X-Papyrus-Pdf", "committed");
+              res.end(pdf);
+              return;
+            }
             console.error(`${logPrefix} Generation failed:`, err);
             res.statusCode = 500;
             res.end(`PDF generation failed: ${err}`);
