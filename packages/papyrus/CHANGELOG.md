@@ -1,5 +1,11 @@
 # @n-uf/papyrus
 
+## 0.1.1
+
+### Patch Changes
+
+- 4410d65: Vite plugin (dev): when generating a PDF fails (e.g. no matching Playwright browser), serve the committed PDF instead of a 500; HEAD requests answer from the committed file (200 / 404) without generating.
+
 ## 0.1.0
 
 ### Minor Changes

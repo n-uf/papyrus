@@ -1,6 +1,6 @@
 {
   "name": "@n-uf/papyrus",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Documents engine: content-free UI building blocks, document registry and PDF export for documents rendered as HTML and PDF",
   "license": "UNLICENSED",
   "type": "module",
