@@ -1,5 +1,14 @@
 # @n-uf/papyrus
 
+## 0.3.0
+
+### Minor Changes
+
+- bbabb0e: - PDF fingerprints: `papyrus pdf` records a hash of each document's sources (config `sources`, shared and per document) in `<outDir>/papyrus-manifest.json`; `papyrus pdf --check` reports committed PDFs whose sources changed (exit 1), without a browser. `checkPdfs`, `pdfStatus`, `fingerprintSources`.
+  - Vite plugin: serves a committed PDF in place of a failed generation only while it is current (409 when stale); `/docs/<id>.pdf?<params>` renders with the document parameters and never overwrites the committed file; `config` option.
+  - `@n-uf/papyrus/server`: `createPdfHandler`, a Web request handler that renders a document's print route (with the reader's parameters and forwarded login cookies) to a downloadable PDF, for serverless functions.
+  - `renderPdf` `headers` option.
+
 ## 0.2.0
 
 ### Minor Changes
