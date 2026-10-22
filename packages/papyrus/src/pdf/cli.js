@@ -13,6 +13,7 @@ import path from "node:path";
 import {
   DEFAULT_BASE_URL,
   DEFAULT_CONFIG_FILE,
+  checkPdfs,
   exportPdfs,
   readConfig,
   waitForServer,
@@ -30,6 +31,8 @@ Options:
   --only <id>         Export a single document
   --out <dir>         Output folder (default: config outDir, else ./pdf)
   --wait <seconds>    Wait up to N seconds for the server to answer first
+  --check             Do not print: report committed PDFs whose sources changed since
+                      they were printed (exit 1 when any is stale or missing)
   -h, --help          Show this help
 
 Environment:
@@ -40,9 +43,16 @@ ${DEFAULT_CONFIG_FILE}:
     "outDir": "apps/viewer/public/docs",
     "baseUrl": "http://localhost:5173",
     "docUrl": "/docs/{id}?print=true",
-    "docs": ["user-manual", { "id": "annual-report", "filename": "annual-report-2026.pdf" }]
+    "sources": ["packages/docs/src/shared"],
+    "docs": ["user-manual", { "id": "annual-report", "filename": "annual-report-2026.pdf",
+             "sources": ["packages/docs/src/annual-report"] }]
   }
+
+  "sources" (shared) and per-document "sources" are fingerprinted into
+  <outDir>/papyrus-manifest.json when a PDF is printed; --check compares them.
 `;
+
+const FLAGS = new Set(["check"]);
 
 function parseArgs(argv) {
   const args = { _: [] };
@@ -51,6 +61,10 @@ function parseArgs(argv) {
     if (a === "-h" || a === "--help") args.help = true;
     else if (a.startsWith("--")) {
       const key = a.slice(2);
+      if (FLAGS.has(key)) {
+        args[key] = true;
+        continue;
+      }
       const value = argv[++i];
       if (value === undefined || value.startsWith("--")) {
         throw new Error(`Option --${key} needs a value.`);
@@ -78,6 +92,17 @@ async function pdfCommand(args) {
     DEFAULT_BASE_URL;
   const outDir = path.resolve(args.out ? process.cwd() : dir, args.out ?? config.outDir ?? "pdf");
 
+  if (args.check) {
+    const statuses = checkPdfs({ config, dir, outDir, only: args.only });
+    for (const s of statuses) {
+      console.log(`  ${s.status.padEnd(9)} ${s.id}${s.reason ? ` (${s.reason})` : ""}`);
+    }
+    const bad = statuses.filter((s) => s.status === "stale" || s.status === "missing");
+    console.log(bad.length ? `\n${bad.length} PDF(s) out of date: run papyrus pdf.` : "\nAll checked PDFs are current.");
+    if (bad.length) process.exitCode = 1;
+    return;
+  }
+
   if (args.wait) await waitForServer(baseUrl, Number(args.wait));
 
   const { failed } = await exportPdfs({
@@ -86,6 +111,8 @@ async function pdfCommand(args) {
     docs: config.docs,
     docUrl: config.docUrl,
     only: args.only,
+    config,
+    configDir: dir,
   });
   if (failed.length) process.exitCode = 1;
 }

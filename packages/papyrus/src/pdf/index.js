@@ -16,6 +16,17 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
+import { docSources, fingerprintSources, pdfStatus, readManifest, writeManifest } from "./fingerprint.js";
+
+export {
+  MANIFEST_FILE,
+  docSources,
+  fingerprintSources,
+  listSourceFiles,
+  pdfStatus,
+  readManifest,
+  writeManifest,
+} from "./fingerprint.js";
 
 /** A4 at 96dpi. */
 export const A4_VIEWPORT = { width: 794, height: 1123 };
@@ -108,9 +119,12 @@ export async function renderPdf(browser, url, options = {}) {
     settleMs = 2_000,
     timeoutMs = 30_000,
     css = PDF_PRINT_CSS,
+    headers,
   } = options;
   const page = await browser.newPage({ viewport });
   try {
+    // e.g. the reader's session cookie, when the documents sit behind a login
+    if (headers) await page.setExtraHTTPHeaders(headers);
     await page.goto(url, { waitUntil: "networkidle", timeout: timeoutMs });
     await page.waitForTimeout(settleMs);
     await page.emulateMedia({ media: "print" });
@@ -148,13 +162,24 @@ export async function renderPdf(browser, url, options = {}) {
   }
 }
 
-/** Normalise `docs` entries (string | {id, filename?, pageCount?}) to {id, filename, pageCount?}. */
+/** Normalise `docs` entries (string | {id, filename?, pageCount?, sources?}) to {id, filename, pageCount?, sources}. */
 export function normalizeDocs(docs) {
   return (docs ?? []).map((entry) => {
     const doc = typeof entry === "string" ? { id: entry } : entry;
     if (!doc || !doc.id) throw new Error(`Invalid docs entry: ${JSON.stringify(entry)}`);
-    return { id: doc.id, filename: doc.filename ?? `${doc.id}.pdf`, pageCount: doc.pageCount };
+    return { id: doc.id, filename: doc.filename ?? `${doc.id}.pdf`, pageCount: doc.pageCount, sources: doc.sources ?? [] };
   });
+}
+
+/**
+ * Status of every committed PDF against its sources (no browser, no server).
+ * @param {{ config: object, dir: string, outDir: string, only?: string }} options
+ */
+export function checkPdfs({ config, dir, outDir, only }) {
+  const manifest = readManifest(outDir);
+  return normalizeDocs(config.docs)
+    .filter((doc) => !only || doc.id === only)
+    .map((doc) => pdfStatus({ dir, outDir, config, doc, manifest }));
 }
 
 /** Poll until the server answers, so CI can start the viewer in the background. */
@@ -213,6 +238,10 @@ export async function exportPdfs(options) {
   const browser = await launchBrowser();
   const written = [];
   const failed = [];
+  // Source fingerprints (when the config lists sources): recorded per written PDF
+  const config = options.config ?? { docs: options.docs };
+  const configDir = options.configDir ?? process.cwd();
+  const manifest = readManifest(outDir);
   try {
     for (const doc of docs) {
       const outputPath = path.join(outDir, doc.filename);
@@ -224,6 +253,11 @@ export async function exportPdfs(options) {
         });
         fs.writeFileSync(outputPath, pdf);
         written.push(outputPath);
+        const fingerprint = fingerprintSources(configDir, docSources(config, doc));
+        if (fingerprint) {
+          manifest.docs[doc.id] = { fingerprint, file: doc.filename, pages: countPdfPages(pdf) };
+          writeManifest(outDir, manifest);
+        }
         log(`    ok ${(pdf.length / 1024).toFixed(0)} KB\n`);
       } catch (err) {
         failed.push(doc.id);
