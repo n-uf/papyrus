@@ -1,5 +1,11 @@
 # @n-uf/papyrus
 
+## 0.2.0
+
+### Minor Changes
+
+- b671368: Document parameters (`@n-uf/papyrus/params`): `useDocParam(name, fallback)` keeps a reader-changeable value (e.g. a calculator input) in the URL query string, so every rendering of a document (viewer page, thumbnail, print copy, `?print=true` export) shows the same values and links carry them. Also `readDocParam`, `writeDocParam`.
+
 ## 0.1.1
 
 ### Patch Changes
