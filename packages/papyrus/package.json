@@ -83,6 +83,10 @@
       "types": "./src/dossier/index.ts",
       "default": "./src/dossier/index.ts"
     },
+    "./params": {
+      "types": "./src/params/index.ts",
+      "default": "./src/params/index.ts"
+    },
     "./pdf": {
       "types": "./src/pdf/index.d.ts",
       "default": "./src/pdf/index.js"
