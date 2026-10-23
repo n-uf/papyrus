@@ -1,5 +1,11 @@
 # @n-uf/papyrus
 
+## 0.3.1
+
+### Patch Changes
+
+- abee513: Monospace text in papyrus components follows the app's `--font-mono` (Tailwind's theme variable), falling back to the system monospace, so documents can pin their fonts and print identically on every machine.
+
 ## 0.3.0
 
 ### Minor Changes
