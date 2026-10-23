@@ -33,7 +33,7 @@ export function FooterActionBadge({
         style={{
           fontSize: 9,
           fontWeight: 600,
-          fontFamily: 'ui-monospace, "SF Mono", monospace',
+          fontFamily: 'var(--font-mono, ui-monospace, "SF Mono", monospace)',
           textTransform: "uppercase",
           letterSpacing: "0.04em",
           color: style.color,

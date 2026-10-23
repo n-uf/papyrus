@@ -18,7 +18,7 @@ export function KeyBadge({
         borderRadius: 4,
         background: "rgba(0, 0, 0, 0.04)",
         color: "rgb(55, 60, 70)",
-        fontFamily: "ui-monospace, monospace",
+        fontFamily: "var(--font-mono, ui-monospace, monospace)",
         border: "1px solid rgba(0, 0, 0, 0.08)",
         margin: "0 2px",
       }}

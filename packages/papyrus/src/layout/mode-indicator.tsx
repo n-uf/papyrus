@@ -25,7 +25,7 @@ export function ModeIndicator({
           borderRadius: 8,
           background: color,
           color: "rgba(255, 255, 255, 0.95)",
-          fontFamily: "ui-monospace, monospace",
+          fontFamily: "var(--font-mono, ui-monospace, monospace)",
           boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
           letterSpacing: "0.05em",
         }}
