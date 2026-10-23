@@ -1,5 +1,11 @@
 # @n-uf/papyrus
 
+## 0.3.2
+
+### Patch Changes
+
+- 1f6642b: `TableCell mono` follows `--font-mono` like the other papyrus monospace text.
+
 ## 0.3.1
 
 ### Patch Changes
