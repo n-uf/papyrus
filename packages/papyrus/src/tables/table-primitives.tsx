@@ -88,7 +88,7 @@ export function TableCell({
       style={{
         color: "rgb(50, 55, 65)",
         borderBottom: "1px solid rgba(0, 0, 0, 0.04)",
-        fontFamily: mono ? "ui-monospace, monospace" : undefined,
+        fontFamily: mono ? "var(--font-mono, ui-monospace, monospace)" : undefined,
         lineHeight: 1.5,
         width,
       }}
