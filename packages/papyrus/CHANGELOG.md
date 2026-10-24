@@ -1,5 +1,11 @@
 # @n-uf/papyrus
 
+## 0.3.3
+
+### Patch Changes
+
+- 6a3b5fc: Vite plugin: only documents on the config's export list are written to the public folder; documents rendered on request (not exported) are served but never saved, so no stray PDF can be committed.
+
 ## 0.3.2
 
 ### Patch Changes
