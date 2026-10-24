@@ -10,6 +10,10 @@
  * `/docs/<id>?print=true&raised=750000` and serves it without touching the
  * committed file (it would not match the defaults).
  *
+ * Only documents on the config's export list (`docs`) are written to the
+ * public folder; others (rendered on request, e.g. a calculator) are served
+ * but never saved, so no stray PDF can be committed by accident.
+ *
  * Without a working browser the committed PDF is served instead, but only
  * while it is current: when papyrus.config.json lists the document's sources,
  * their fingerprint must match the one recorded at export
@@ -53,6 +57,9 @@ export function papyrusPdfPlugin(options = {}) {
 
     configureServer(server) {
       const loaded = findConfig(options.config, server.config.root);
+
+      /** Documents `papyrus pdf` exports (all, when there is no config). */
+      const exported = (id) => !loaded || normalizeDocs(loaded.config.docs).some((d) => d.id === id);
 
       /** Whether the committed PDF of `id` may stand in for a fresh one. */
       const committedStatus = (id, filePath) => {
@@ -99,8 +106,8 @@ export function papyrusPdfPlugin(options = {}) {
         getBrowser()
           .then((b) => renderPdf(b, url))
           .then((pdf) => {
-            // Only the default rendering becomes the committed file
-            if (!withParams) {
+            // Only the default rendering of an exported document becomes the committed file
+            if (!withParams && exported(id)) {
               fs.mkdirSync(path.dirname(filePath), { recursive: true });
               fs.writeFileSync(filePath, pdf);
             }
