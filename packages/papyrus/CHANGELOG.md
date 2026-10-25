@@ -1,5 +1,11 @@
 # @n-uf/papyrus
 
+## 0.3.4
+
+### Patch Changes
+
+- 9bcd84c: `createPdfHandler` (`@n-uf/papyrus/server`) launches a browser for each request and closes it when the PDF is done, instead of keeping one across requests. Serverless Chromium (@sparticuz/chromium) runs `--single-process`, where closing a PDF's page context kills the browser, so the kept browser failed every request after the first on a warm instance ("browser.newPage: Target page, context or browser has been closed"). Apps that build the handler per request to work around this can go back to one module-level handler. A new `reuseBrowser` option (default false) keeps the old behaviour for a normal multi-process Chromium on a long-running server.
+
 ## 0.3.3
 
 ### Patch Changes
