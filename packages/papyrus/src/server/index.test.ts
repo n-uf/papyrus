@@ -14,8 +14,13 @@ function fakeBrowser() {
     pdf: async () => Buffer.from("%PDF-1.4 /Type /Page "),
     close: async () => {},
   };
-  const browser = { isConnected: () => true, newPage: async () => page };
-  return { browser, seen };
+  const state = { connected: true, closed: 0 };
+  const browser = {
+    isConnected: () => state.connected,
+    newPage: async () => page,
+    close: async () => void ((state.connected = false), state.closed++),
+  };
+  return { browser, seen, state };
 }
 
 describe("createPdfHandler", () => {
@@ -45,5 +50,52 @@ describe("createPdfHandler", () => {
     expect((await handle(new Request("https://docs.example/api/pdf?doc=secret"))).status).toBe(404);
     expect((await handle(new Request("https://docs.example/api/pdf?doc=../calc"))).status).toBe(404);
     expect((await handle(new Request("https://docs.example/api/pdf"))).status).toBe(404);
+  });
+
+  it("launches a browser per request and closes it, even when rendering fails", async () => {
+    const launched: ReturnType<typeof fakeBrowser>[] = [];
+    const handle = createPdfHandler({
+      docs: ["calc"],
+      launch: async () => {
+        const fake = fakeBrowser();
+        launched.push(fake);
+        return fake.browser as never;
+      },
+      renderOptions: { settleMs: 0 },
+    });
+    for (let i = 0; i < 3; i++) {
+      expect((await handle(new Request("https://docs.example/api/pdf?doc=calc"))).status).toBe(200);
+    }
+    expect(launched).toHaveLength(3);
+    expect(launched.every((f) => f.state.closed === 1)).toBe(true);
+
+    const broken = fakeBrowser();
+    broken.browser.newPage = async () => {
+      throw new Error("Target page, context or browser has been closed");
+    };
+    const failing = createPdfHandler({ docs: ["calc"], launch: async () => broken.browser as never });
+    expect((await failing(new Request("https://docs.example/api/pdf?doc=calc"))).status).toBe(500);
+    expect(broken.state.closed).toBe(1);
+  });
+
+  it("with reuseBrowser keeps one browser while it stays connected", async () => {
+    const launched: ReturnType<typeof fakeBrowser>[] = [];
+    const handle = createPdfHandler({
+      docs: ["calc"],
+      reuseBrowser: true,
+      launch: async () => {
+        const fake = fakeBrowser();
+        launched.push(fake);
+        return fake.browser as never;
+      },
+      renderOptions: { settleMs: 0 },
+    });
+    await handle(new Request("https://docs.example/api/pdf?doc=calc"));
+    await handle(new Request("https://docs.example/api/pdf?doc=calc"));
+    expect(launched).toHaveLength(1);
+    expect(launched[0]?.state.closed).toBe(0);
+    launched[0]!.state.connected = false;
+    await handle(new Request("https://docs.example/api/pdf?doc=calc"));
+    expect(launched).toHaveLength(2);
   });
 });
