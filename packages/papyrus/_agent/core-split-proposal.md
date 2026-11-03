@@ -3,7 +3,7 @@
 > Pull the React-free logic and the page contract out into `@n-uf/papyrus/core`; keep the React
 > components as a thin layer on top. No rewrite of the view components.
 
-Status: proposal, nothing built. Drafted 2026-11-02.
+Status: stage 1 built on `fl/papyrus-core` (2026-11-02); stages 2 to 4 not started.
 
 ## Why
 
@@ -94,8 +94,10 @@ const MAIN_CONTENT_CLASS = "pdf-main-content";
 const NO_PRINT_CLASS = "no-print";
 const AVOID_BREAK_CLASS = "avoid-break";
 const PAGE_COUNT_ATTR = "data-papyrus-page-count";
-const flattenCss: string;                          // the shadow/backdrop/rounded fixes now in printStyles
 ```
+
+The shadow/backdrop/rounded print fixes stay in the React layer (`blockPrintStyles` in `/styles`): they
+target papyrus' own block classes and Tailwind utilities, not the page contract.
 
 ### 3. Doc model and registry
 
@@ -121,8 +123,8 @@ function setDocParam(name: string, value: number, fallback: number): void;
 
 Every current import path keeps working; no consumer changes are required.
 
-- `/styles`: `printStyles = sheetCss(SHEETS.A4) + flattenCss`. A snapshot test shows the resulting
-  rules match today's string.
+- `/styles`: `printStyles = sheetCss(SHEETS.A4) + blockPrintStyles`, the same rules as before
+  (checked rule by rule against 0.3.4's string).
 - `/dossier`: re-exports core's types and registry, narrowed to React:
   `type RegisteredDoc = CoreRegisteredDoc<React.ComponentType<DocPageProps>>`. `getDocComponent` and
   `DocPageProps` stay here.
