@@ -16,6 +16,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
+import { CONTAINER_CLASS, NO_PRINT_CLASS, PAGE_CLASS, PAGE_COUNT_ATTR, SHEETS } from "../core/index.js";
 import { docSources, fingerprintSources, pdfStatus, readManifest, writeManifest } from "./fingerprint.js";
 
 export {
@@ -29,28 +30,35 @@ export {
 } from "./fingerprint.js";
 
 /** A4 at 96dpi. */
-export const A4_VIEWPORT = { width: 794, height: 1123 };
+export const A4_VIEWPORT = { ...SHEETS.A4.viewport };
 
 export const DEFAULT_CONFIG_FILE = "papyrus.config.json";
 export const DEFAULT_DOC_URL = "/docs/{id}?print=true";
 export const DEFAULT_BASE_URL = "http://localhost:5173";
 
 /**
- * Print-media overrides injected before printing. They target the
- * `.pdf-container` / `.pdf-page` structure produced by papyrus' layout
- * components.
+ * Print-media overrides injected before printing a sheet. They target the
+ * page contract (`.pdf-container` / `.pdf-page`, see `@n-uf/papyrus/core`)
+ * produced by papyrus' layout components.
+ *
+ * @param {{ pageSize: string, width: string, height: string }} sheet
  */
-export const PDF_PRINT_CSS = `
-  @page { size: A4; margin: 0; }
-  html, body { height: auto !important; width: 210mm !important; overflow: visible !important; margin: 0 !important; padding: 0 !important; }
+function exportPrintCss(sheet) {
+  return `
+  @page { size: ${sheet.pageSize}; margin: 0; }
+  html, body { height: auto !important; width: ${sheet.width} !important; overflow: visible !important; margin: 0 !important; padding: 0 !important; }
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   #root { height: auto !important; overflow: visible !important; }
-  .pdf-container { background: none !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; display: block !important; }
-  .pdf-page { display: flex !important; flex-direction: column !important; width: 210mm !important; height: 297mm !important; overflow: visible !important; margin: 0 !important; box-shadow: none !important; page-break-after: always; break-after: page; }
-  .pdf-page:last-child { page-break-after: auto; break-after: auto; }
-  .no-print { display: none !important; }
+  .${CONTAINER_CLASS} { background: none !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; display: block !important; }
+  .${PAGE_CLASS} { display: flex !important; flex-direction: column !important; width: ${sheet.width} !important; height: ${sheet.height} !important; overflow: visible !important; margin: 0 !important; box-shadow: none !important; page-break-after: always; break-after: page; }
+  .${PAGE_CLASS}:last-child { page-break-after: auto; break-after: auto; }
+  .${NO_PRINT_CLASS} { display: none !important; }
   [class*="opacity-"] { opacity: 1 !important; }
 `;
+}
+
+/** Print-media overrides injected before printing an A4 document. */
+export const PDF_PRINT_CSS = exportPrintCss(SHEETS.A4);
 
 /** Load Playwright from this package's context, then from the caller's cwd. */
 export async function loadPlaywright() {
@@ -129,15 +137,16 @@ export async function renderPdf(browser, url, options = {}) {
     await page.waitForTimeout(settleMs);
     await page.emulateMedia({ media: "print" });
     await page.addStyleTag({ content: css });
-    const dom = await page.evaluate(() => {
-      const attr = document
-        .querySelector("[data-papyrus-page-count]")
-        ?.getAttribute("data-papyrus-page-count");
-      return {
-        pages: document.querySelectorAll(".pdf-page").length,
-        declared: attr ? Number(attr) : null,
-      };
-    });
+    const dom = await page.evaluate(
+      ({ countAttr, pageSelector }) => {
+        const attr = document.querySelector(`[${countAttr}]`)?.getAttribute(countAttr);
+        return {
+          pages: document.querySelectorAll(pageSelector).length,
+          declared: attr ? Number(attr) : null,
+        };
+      },
+      { countAttr: PAGE_COUNT_ATTR, pageSelector: `.${PAGE_CLASS}` },
+    );
     const expected = options.expectedPages ?? dom.declared;
     const pdf = await page.pdf({
       format: "A4",
