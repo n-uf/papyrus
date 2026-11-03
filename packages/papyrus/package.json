@@ -105,7 +105,8 @@
     "build": "tsc --noEmit",
     "type-check": "tsc --noEmit",
     "lint": "eslint . --max-warnings 0",
-    "test": "vitest run"
+    "test": "vitest run",
+    "gen:sheets": "node scripts/gen-sheet-css.js"
   },
   "dependencies": {
     "clsx": "catalog:",
