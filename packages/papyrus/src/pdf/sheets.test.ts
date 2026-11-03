@@ -42,9 +42,14 @@ describe("sheet options", () => {
     expect(pdfPaper({ ...SHEETS.LETTER })).toEqual({ width: "8.5in", height: "11in" });
     const css = pdfPrintCss(SHEETS.LETTER, { pageSelector: ".page" });
     expect(css).toContain("@page { size: letter; margin: 0; }");
-    expect(css).toContain(".page { display: flex !important;");
-    expect(css).toContain("width: 8.5in !important; height: 11in !important;");
+    expect(css).toContain(".page { width: 8.5in !important; height: 11in !important;");
     expect(css).not.toContain(".pdf-page");
+  });
+
+  it("keeps a plain page's own layout; only papyrus' .pdf-page is forced to a flex column", () => {
+    // Forcing flex on a plain page stops its children's margins collapsing and shifts content.
+    expect(pdfPrintCss(SHEETS.LETTER, { pageSelector: ".page" })).not.toMatch(/display: flex/);
+    expect(pdfPrintCss(SHEETS.LETTER)).toContain(".pdf-page { display: flex !important; flex-direction: column !important;");
   });
 
   it("carries a document's own sheet and page selector", () => {

@@ -59,17 +59,23 @@ export function resolveSheet(sheet) {
  * page contract (`.pdf-container` / page elements, see `src/core/contract.js`)
  * produced by papyrus' layout components or by a plain page.
  *
+ * Papyrus' own pages (`.pdf-page`, the default) are flex columns and are kept
+ * so in print. Pages matched by another selector keep their own layout: the
+ * CSS only sizes them and breaks between them (forcing flex would stop their
+ * children's margins from collapsing and shift the content).
+ *
  * @param {{ pageSize: string, width: string, height: string }} [sheet] default A4
  * @param {{ pageSelector?: string }} [options] page elements, default `.pdf-page`
  */
 export function pdfPrintCss(sheet = SHEETS.A4, { pageSelector = DEFAULT_PAGE_SELECTOR } = {}) {
+  const layout = pageSelector === DEFAULT_PAGE_SELECTOR ? "display: flex !important; flex-direction: column !important; " : "";
   return `
   @page { size: ${sheet.pageSize}; margin: 0; }
   html, body { height: auto !important; width: ${sheet.width} !important; overflow: visible !important; margin: 0 !important; padding: 0 !important; }
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   #root { height: auto !important; overflow: visible !important; }
   .${CONTAINER_CLASS} { background: none !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; display: block !important; }
-  ${pageSelector} { display: flex !important; flex-direction: column !important; width: ${sheet.width} !important; height: ${sheet.height} !important; overflow: visible !important; margin: 0 !important; box-shadow: none !important; page-break-after: always; break-after: page; }
+  ${pageSelector} { ${layout}width: ${sheet.width} !important; height: ${sheet.height} !important; overflow: visible !important; margin: 0 !important; box-shadow: none !important; page-break-after: always; break-after: page; }
   ${pageSelector}:last-child { page-break-after: auto; break-after: auto; }
   .${NO_PRINT_CLASS} { display: none !important; }
   [class*="opacity-"] { opacity: 1 !important; }
