@@ -37,11 +37,11 @@ export interface PapyrusConfig {
 export interface RenderPdfOptions {
   /** Sheet size: sets the viewport, the print CSS and the PDF paper. Default A4. */
   sheet?: SheetOption;
-  /** Elements that are one PDF page each. Default ".pdf-page" ({@link DEFAULT_PAGE_SELECTOR}). */
+  /** Elements that are one PDF page each: one selector, no lists. Default ".pdf-page" ({@link DEFAULT_PAGE_SELECTOR}). */
   pageSelector?: string;
   /** Default: the sheet's viewport. */
   viewport?: { width: number; height: number };
-  /** Wait for web fonts (`document.fonts.ready`) before printing. Default true. */
+  /** Wait for web fonts (`document.fonts.ready`, at most 10 s) before printing. Default true. */
   waitForFonts?: boolean;
   /** Extra wait after network idle. Default 2000 ms. */
   settleMs?: number;
@@ -75,8 +75,15 @@ export type PdfStatus = {
 };
 
 export interface PapyrusManifest {
-  docs: Record<string, { fingerprint: string; file: string; pages: number }>;
+  /** `layout`: the sheet and page selector it was printed with, when not the defaults (see {@link printLayout}). */
+  docs: Record<string, { fingerprint: string; file: string; pages: number; layout?: string }>;
 }
+
+/** How a document is printed, for the manifest: undefined for A4 on ".pdf-page", else e.g. "LETTER .page". */
+export function printLayout(
+  config: Pick<PapyrusConfig, "sheet" | "pageSelector">,
+  doc: Pick<PapyrusDocEntry, "sheet" | "pageSelector">,
+): string | undefined;
 
 export const MANIFEST_FILE: string;
 export function listSourceFiles(dir: string, sources: string[]): string[];
@@ -104,6 +111,8 @@ export const DEFAULT_PAGE_SELECTOR: string;
 
 /** A sheet from a name ("A4", "letter") or a sheet object; default A4. Throws on an unknown name or an incomplete object. */
 export function resolveSheet(sheet?: SheetOption): SheetSize;
+/** One CSS selector for the page elements; default ".pdf-page" (also for null or ""). Throws on lists (commas) or braces. */
+export function resolvePageSelector(selector?: string | null): string;
 /** Print-media CSS injected before printing a sheet. Default A4 and ".pdf-page". */
 export function pdfPrintCss(sheet?: Pick<SheetSize, "pageSize" | "width" | "height">, options?: { pageSelector?: string }): string;
 /** `page.pdf()` paper: Playwright's format for the A4 / Letter presets, else the sheet's width and height. */

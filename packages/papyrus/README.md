@@ -58,8 +58,10 @@ expected `pageCount` must agree, so a broken render is never saved.
 
 **Sheet size.** A4 by default. Set `"sheet": "letter"` (or a sheet object) for the whole config or per
 document; it sets the viewport, the print CSS and the PDF paper. `"pageSelector"` names the page elements
-when they are not `.pdf-page`. Web fonts are awaited before printing (`waitForFonts`, default on), so
-pagination does not depend on load timing.
+when they are not `.pdf-page` (one selector; those pages keep their own layout). Web fonts are awaited
+before printing (`waitForFonts`, default on, at most 10 s), so pagination does not depend on load timing.
+A PDF printed on another sheet or selector records that in the manifest, so `--check` reports it stale
+when the config changes it.
 
 **Plain HTML.** Point `baseUrl` at a folder; no server needed:
 

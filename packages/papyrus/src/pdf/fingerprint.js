@@ -11,11 +11,16 @@
  *   "sources": ["packages/docs/src/shared"],             shared by every document
  *   "docs": [{ "id": "gtm-thesis", "sources": ["packages/docs/src/gtm-thesis"] }]
  * Without any sources a document is not fingerprinted (always reported as unchecked).
+ *
+ * A document printed on another sheet or with another page selector than the
+ * defaults (A4, `.pdf-page`) also records that as `layout`, so changing it in
+ * the config makes the committed PDF stale too.
  */
 
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { PAGE_CLASS } from "../core/index.js";
 
 export const MANIFEST_FILE = "papyrus-manifest.json";
 
@@ -58,6 +63,19 @@ export function docSources(config, doc) {
   return [...(config.sources ?? []), ...(doc.sources ?? [])];
 }
 
+/**
+ * How a document is printed, as recorded in the manifest: undefined for the
+ * defaults (A4 on `.pdf-page`, which is what manifests written before sheets
+ * existed mean), else e.g. "LETTER .page" or "5.5inx8.5in .pdf-page".
+ */
+export function printLayout(config, doc) {
+  const sheet = doc.sheet ?? config.sheet;
+  const selector = (doc.pageSelector ?? config.pageSelector) || `.${PAGE_CLASS}`;
+  const sheetKey =
+    sheet == null ? "A4" : typeof sheet === "string" ? sheet.toUpperCase() : `${sheet.width}x${sheet.height}`;
+  return sheetKey === "A4" && selector === `.${PAGE_CLASS}` ? undefined : `${sheetKey} ${selector.trim()}`;
+}
+
 /** Read the manifest in an output folder ({ docs: {} } when absent). */
 export function readManifest(outDir) {
   const file = path.join(outDir, MANIFEST_FILE);
@@ -79,8 +97,12 @@ export function pdfStatus({ dir, outDir, config, doc, manifest }) {
   if (!fs.existsSync(file)) return { id: doc.id, status: "missing", reason: `${doc.filename} does not exist` };
   const fingerprint = fingerprintSources(dir, docSources(config, doc));
   if (fingerprint === null) return { id: doc.id, status: "unchecked", reason: "no sources configured" };
-  const recorded = (manifest ?? readManifest(outDir)).docs[doc.id]?.fingerprint;
+  const entry = (manifest ?? readManifest(outDir)).docs[doc.id];
+  const recorded = entry?.fingerprint;
   if (!recorded) return { id: doc.id, status: "stale", reason: "not in the manifest" };
   if (recorded !== fingerprint) return { id: doc.id, status: "stale", reason: "sources changed since it was printed" };
+  if (entry.layout !== printLayout(config, doc)) {
+    return { id: doc.id, status: "stale", reason: "sheet or page selector changed since it was printed" };
+  }
   return { id: doc.id, status: "current" };
 }

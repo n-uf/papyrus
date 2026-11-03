@@ -9,13 +9,18 @@ import {
   A4_VIEWPORT,
   DEFAULT_PAGE_SELECTOR,
   PDF_PRINT_CSS,
+  checkPdfs,
   countPdfPages,
   exportPdfs,
+  fingerprintSources,
   launchBrowser,
   normalizeDocs,
   pdfPaper,
   pdfPrintCss,
+  printLayout,
+  readManifest,
   renderPdf,
+  resolvePageSelector,
   resolveSheet,
 } from "./index.js";
 
@@ -50,6 +55,51 @@ describe("sheet options", () => {
     // Forcing flex on a plain page stops its children's margins collapsing and shifts content.
     expect(pdfPrintCss(SHEETS.LETTER, { pageSelector: ".page" })).not.toMatch(/display: flex/);
     expect(pdfPrintCss(SHEETS.LETTER)).toContain(".pdf-page { display: flex !important; flex-direction: column !important;");
+  });
+
+  it("takes one page selector; empty means the default", () => {
+    expect(resolvePageSelector(undefined)).toBe(".pdf-page");
+    expect(resolvePageSelector(null)).toBe(".pdf-page");
+    expect(resolvePageSelector("")).toBe(".pdf-page");
+    expect(resolvePageSelector(" .page ")).toBe(".page");
+    expect(() => resolvePageSelector(".a, .b")).toThrow(/one selector/);
+    expect(() => resolvePageSelector(".a{}")).toThrow(/one selector/);
+    expect(() => resolvePageSelector(3 as never)).toThrow(/Invalid pageSelector/);
+    expect(pdfPrintCss(SHEETS.A4, { pageSelector: "" })).toBe(PDF_PRINT_CSS);
+  });
+
+  it("rejects a sheet without a usable viewport", () => {
+    const bad = { pageSize: "A5", width: "148mm", height: "210mm", viewport: {} };
+    expect(() => resolveSheet(bad as never)).toThrow(/positive width and height/);
+  });
+
+  it("records non-default sheets and selectors as the print layout", () => {
+    expect(printLayout({}, { id: "x" } as never)).toBeUndefined();
+    expect(printLayout({ sheet: "a4", pageSelector: ".pdf-page" }, {})).toBeUndefined();
+    expect(printLayout({ sheet: "letter" }, { pageSelector: ".page" })).toBe("LETTER .page");
+    expect(printLayout({ sheet: "letter" }, { sheet: "A4" })).toBeUndefined();
+  });
+
+  it("reports a PDF stale when its sheet changes, current when nothing does", () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "papyrus-layout-"));
+    try {
+      fs.mkdirSync(path.join(tmp, "src"));
+      fs.writeFileSync(path.join(tmp, "src", "doc.html"), "<section class=page></section>");
+      const outDir = path.join(tmp, "out");
+      fs.mkdirSync(outDir);
+      fs.writeFileSync(path.join(outDir, "doc.pdf"), "%PDF");
+      const fingerprint = fingerprintSources(tmp, ["src"])!;
+      fs.writeFileSync(
+        path.join(outDir, "papyrus-manifest.json"),
+        JSON.stringify({ docs: { doc: { fingerprint, file: "doc.pdf", pages: 1 } } }),
+      );
+      const status = (config: object) =>
+        checkPdfs({ config: { sources: ["src"], docs: ["doc"], ...config }, dir: tmp, outDir })[0];
+      expect(status({})).toMatchObject({ status: "current" }); // manifests from before sheets: A4 default
+      expect(status({ sheet: "letter" })).toMatchObject({ status: "stale", reason: expect.stringMatching(/sheet/) });
+    } finally {
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
   });
 
   it("carries a document's own sheet and page selector", () => {
@@ -141,5 +191,7 @@ describe("printing plain HTML over file://", () => {
     expect(written.map((f) => path.basename(f))).toEqual(["resume.pdf", "report.pdf"]);
     expectPaper(fs.readFileSync(path.join(outDir, "resume.pdf")), LETTER_PT);
     expectPaper(fs.readFileSync(path.join(outDir, "report.pdf")), A4_PT);
+    // No sources configured here, so nothing is fingerprinted into a manifest.
+    expect(readManifest(outDir).docs).toEqual({});
   }, 120_000);
 });

@@ -18,7 +18,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
 import { CONTAINER_CLASS, NO_PRINT_CLASS, PAGE_CLASS, PAGE_COUNT_ATTR, SHEETS, getSheet } from "../core/index.js";
-import { docSources, fingerprintSources, pdfStatus, readManifest, writeManifest } from "./fingerprint.js";
+import { docSources, fingerprintSources, pdfStatus, printLayout, readManifest, writeManifest } from "./fingerprint.js";
 
 export {
   MANIFEST_FILE,
@@ -26,6 +26,7 @@ export {
   fingerprintSources,
   listSourceFiles,
   pdfStatus,
+  printLayout,
   readManifest,
   writeManifest,
 } from "./fingerprint.js";
@@ -40,6 +41,9 @@ export const DEFAULT_BASE_URL = "http://localhost:5173";
 /** Default page elements: the page contract's `.pdf-page`. */
 export const DEFAULT_PAGE_SELECTOR = `.${PAGE_CLASS}`;
 
+/** Longest wait for web fonts before printing anyway. */
+const FONT_WAIT_MAX_MS = 10_000;
+
 /**
  * A sheet from a name ("A4", "letter") or a sheet object; default A4.
  *
@@ -51,7 +55,27 @@ export function resolveSheet(sheet) {
   for (const key of ["pageSize", "width", "height", "viewport"]) {
     if (!sheet[key]) throw new Error(`Invalid sheet: missing "${key}" in ${JSON.stringify(sheet)}`);
   }
+  const { width, height } = sheet.viewport;
+  if (!(width > 0) || !(height > 0)) {
+    throw new Error(`Invalid sheet: viewport needs a positive width and height in ${JSON.stringify(sheet)}`);
+  }
   return sheet;
+}
+
+/**
+ * The page elements' selector: one CSS selector, default `.pdf-page`. Lists
+ * (commas) and braces are rejected: the selector goes into the print CSS
+ * (with `:last-child`) as well as into `querySelectorAll`.
+ *
+ * @param {string | null | undefined} selector
+ */
+export function resolvePageSelector(selector) {
+  if (selector == null || selector === "") return DEFAULT_PAGE_SELECTOR;
+  if (typeof selector !== "string") throw new Error(`Invalid pageSelector: ${JSON.stringify(selector)}`);
+  if (/[,{}]/.test(selector)) {
+    throw new Error(`pageSelector must be one selector (no commas or braces): ${JSON.stringify(selector)}`);
+  }
+  return selector.trim();
 }
 
 /**
@@ -67,7 +91,8 @@ export function resolveSheet(sheet) {
  * @param {{ pageSize: string, width: string, height: string }} [sheet] default A4
  * @param {{ pageSelector?: string }} [options] page elements, default `.pdf-page`
  */
-export function pdfPrintCss(sheet = SHEETS.A4, { pageSelector = DEFAULT_PAGE_SELECTOR } = {}) {
+export function pdfPrintCss(sheet = SHEETS.A4, options = {}) {
+  const pageSelector = resolvePageSelector(options.pageSelector);
   const layout = pageSelector === DEFAULT_PAGE_SELECTOR ? "display: flex !important; flex-direction: column !important; " : "";
   return `
   @page { size: ${sheet.pageSize}; margin: 0; }
@@ -163,8 +188,8 @@ export function countPdfPages(pdf) {
  */
 export async function renderPdf(browser, url, options = {}) {
   const sheet = resolveSheet(options.sheet);
+  const pageSelector = resolvePageSelector(options.pageSelector);
   const {
-    pageSelector = DEFAULT_PAGE_SELECTOR,
     viewport = { ...sheet.viewport },
     settleMs = 2_000,
     timeoutMs = 30_000,
@@ -177,8 +202,14 @@ export async function renderPdf(browser, url, options = {}) {
     // e.g. the reader's session cookie, when the documents sit behind a login
     if (headers) await page.setExtraHTTPHeaders(headers);
     await page.goto(url, { waitUntil: "networkidle", timeout: timeoutMs });
-    // Web fonts change text metrics, and with them what fits on a sheet.
-    if (waitForFonts) await page.evaluate(() => document.fonts?.ready.then(() => undefined));
+    // Web fonts change text metrics, and with them what fits on a sheet. Bounded,
+    // so a font request that never settles cannot hang the export.
+    if (waitForFonts) {
+      await page.evaluate(
+        (ms) => Promise.race([document.fonts?.ready, new Promise((r) => setTimeout(r, ms))]).then(() => undefined),
+        Math.min(timeoutMs, FONT_WAIT_MAX_MS),
+      );
+    }
     await page.waitForTimeout(settleMs);
     await page.emulateMedia({ media: "print" });
     await page.addStyleTag({ content: css });
@@ -323,7 +354,11 @@ export async function exportPdfs(options) {
         written.push(outputPath);
         const fingerprint = fingerprintSources(configDir, docSources(config, doc));
         if (fingerprint) {
-          manifest.docs[doc.id] = { fingerprint, file: doc.filename, pages: countPdfPages(pdf) };
+          const layout = printLayout(
+            { sheet: options.sheet ?? config.sheet, pageSelector: options.pageSelector ?? config.pageSelector },
+            doc,
+          );
+          manifest.docs[doc.id] = { fingerprint, file: doc.filename, pages: countPdfPages(pdf), ...(layout ? { layout } : {}) };
           writeManifest(outDir, manifest);
         }
         log(`    ok ${(pdf.length / 1024).toFixed(0)} KB\n`);
