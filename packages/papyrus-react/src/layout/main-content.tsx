@@ -1,5 +1,5 @@
 import React from "react";
-import { MAIN_CONTENT_CLASS } from "../core/index.js";
+import { MAIN_CONTENT_CLASS } from "@n-uf/papyrus";
 
 /**
  * MainContent - Primary content area with left padding for sidebar

@@ -1,5 +1,5 @@
 import React from "react";
-import { PAGE_CLASS } from "../core/index.js";
+import { PAGE_CLASS } from "@n-uf/papyrus";
 
 /**
  * PDFPage - A4-sized page container for printable documents

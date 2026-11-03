@@ -1,9 +1,9 @@
 /**
- * Papyrus core: the framework-free part of the documents engine.
+ * @n-uf/papyrus: the framework-free documents engine (package root).
  *
  * No React, no Node, no Tailwind. Plain ESM JavaScript (typed by
- * ./index.d.ts) so a page without a bundler can use it, and so the React
- * layer and the Node exporter both build on it.
+ * ./index.d.ts) so a page without a bundler can use it, and so
+ * @n-uf/papyrus-react and the Node exporter both build on it.
  */
 
 export {

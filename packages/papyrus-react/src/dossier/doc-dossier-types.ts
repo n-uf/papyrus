@@ -1,7 +1,7 @@
 /**
  * Doc Registry Types
  *
- * The document model lives in `@n-uf/papyrus/core`; this layer pins what
+ * The document model lives in `@n-uf/papyrus`; this layer pins what
  * renders a document to a React component.
  */
 
@@ -10,9 +10,9 @@ import type {
   DocFigures,
   DocRegistry as CoreDocRegistry,
   RegisteredDoc as CoreRegisteredDoc,
-} from "../core/index.js";
+} from "@n-uf/papyrus";
 
-export type { DocCategory, DocFigures, DocMeta, DocTocEntry } from "../core/index.js";
+export type { DocCategory, DocFigures, DocMeta, DocTocEntry } from "@n-uf/papyrus";
 
 // =============================================================================
 // DOC PAGE PROPS

@@ -1,16 +1,17 @@
 // =============================================================================
-// PAPYRUS - Documents engine: generic documentation UI primitives
+// PAPYRUS REACT - React components for the papyrus documents engine
 // =============================================================================
-// Reusable components for PDF-ready documentation and printable pages.
+// Reusable components for PDF-ready documentation and printable pages, on top
+// of the framework-free engine `@n-uf/papyrus`.
 // Content-free: document content, branding and copy live in the documents
 // package, never here.
 
 // =============================================================================
-// CORE
+// ENGINE
 // =============================================================================
-// Framework-free page contract, sheet sizes and TOC numbering. The registry,
-// TOC colours and document parameters are re-exported by their React-facing
-// modules below; import `@n-uf/papyrus/core` for the untyped-component forms.
+// Page contract, sheet sizes and TOC numbering from `@n-uf/papyrus`. The
+// registry, TOC colours and document parameters are re-exported by their
+// React-facing modules below; import `@n-uf/papyrus` for the untyped forms.
 
 export {
   AVOID_BREAK_CLASS,
@@ -25,7 +26,7 @@ export {
   sheetCss,
   type SheetCssOptions,
   type SheetSize,
-} from "./core/index.js";
+} from "@n-uf/papyrus";
 
 // =============================================================================
 // INDICATOR

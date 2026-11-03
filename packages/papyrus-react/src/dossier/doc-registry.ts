@@ -2,7 +2,7 @@
  * Doc Registry - Document component registration and lookup
  *
  * The React face of core's document registry: the same global instance
- * (`@n-uf/papyrus/core` `docRegistry`), typed so each document is rendered
+ * (`@n-uf/papyrus` `docRegistry`), typed so each document is rendered
  * by a React component. Documents are registered at app startup and looked
  * up when opening in the dossier.
  *
@@ -38,7 +38,7 @@ import type React from "react";
 import {
   createDocRegistry as createCoreDocRegistry,
   docRegistry as coreDocRegistry,
-} from "../core/index.js";
+} from "@n-uf/papyrus";
 import type { DocPageProps, DocRegistry, RegisteredDoc } from "./doc-dossier-types";
 
 /**

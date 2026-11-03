@@ -1,4 +1,4 @@
-import { SHEETS, sheetCss } from "../core/index.js";
+import { SHEETS, sheetCss } from "@n-uf/papyrus";
 
 /**
  * Print fixes for papyrus' own blocks (panels, carved text, Tailwind rounded

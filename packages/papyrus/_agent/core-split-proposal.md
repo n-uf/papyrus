@@ -5,6 +5,14 @@
 
 Status: stage 1 built on `fl/papyrus-core` (2026-11-02); stages 2 to 4 not started.
 
+**Decision (2026-11-02): two packages instead of a `/core` subpath.** `@n-uf/papyrus` is now the
+framework-free engine (what this proposal calls core, plus `/pdf`, `/server`, `/vite`); the React layer
+is a new package, `@n-uf/papyrus-react`, with the old subpaths (same pattern as `@n-uf/doodl` +
+`@n-uf/doodl-react`). Read "`@n-uf/papyrus/core`" below as "`@n-uf/papyrus`" and "the React layer" as
+"`@n-uf/papyrus-react`". The core code still lives in `packages/papyrus/src/core/`. Done before any
+release, so `/core` never shipped; consumers go through one breaking change (component imports move to
+`@n-uf/papyrus-react`).
+
 ## Why
 
 Papyrus's real value is the **page contract**: fixed sheets, the print CSS that keeps them one sheet per

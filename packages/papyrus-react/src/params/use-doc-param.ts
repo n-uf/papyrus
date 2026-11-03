@@ -1,13 +1,13 @@
 import { useCallback, useSyncExternalStore } from "react";
-import { readDocParam, readDocSearch, setDocParam, subscribeDocParams } from "../core/index.js";
+import { readDocParam, readDocSearch, setDocParam, subscribeDocParams } from "@n-uf/papyrus";
 
 /**
  * Document parameters: values a document lets the reader change (e.g. a
  * calculator's inputs), kept in the page URL's query string. The URL store
- * lives in `@n-uf/papyrus/core`; this is its React hook.
+ * lives in `@n-uf/papyrus`; this is its React hook.
  */
 
-export { readDocParam, writeDocParam } from "../core/index.js";
+export { readDocParam, writeDocParam } from "@n-uf/papyrus";
 
 /**
  * A numeric document parameter synced with the URL (`?name=value`). The

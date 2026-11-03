@@ -1,7 +1,7 @@
 {
   "name": "@n-uf/papyrus",
   "version": "0.3.4",
-  "description": "Documents engine: content-free UI building blocks, document registry and PDF export for documents rendered as HTML and PDF",
+  "description": "Documents engine, framework-free: page contract, sheet sizes and print CSS, document registry, and PDF export for documents rendered as HTML and PDF",
   "license": "UNLICENSED",
   "type": "module",
   "repository": {
@@ -25,74 +25,18 @@
     "!src/**/setup-tests.*",
     "!src/**/_agent"
   ],
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./src/core/index.js",
+  "types": "./src/core/index.d.ts",
   "bin": {
     "papyrus": "./src/pdf/cli.js"
   },
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
-    },
-    "./core": {
       "types": "./src/core/index.d.ts",
       "default": "./src/core/index.js"
     },
-    "./core/sheet-a4.css": "./src/core/sheet-a4.css",
-    "./core/sheet-letter.css": "./src/core/sheet-letter.css",
-    "./indicator": {
-      "types": "./src/indicator/index.ts",
-      "default": "./src/indicator/index.ts"
-    },
-    "./logo": {
-      "types": "./src/logo/index.ts",
-      "default": "./src/logo/index.ts"
-    },
-    "./file-list": {
-      "types": "./src/file-list/index.ts",
-      "default": "./src/file-list/index.ts"
-    },
-    "./containers": {
-      "types": "./src/containers/index.ts",
-      "default": "./src/containers/index.ts"
-    },
-    "./layout": {
-      "types": "./src/layout/index.ts",
-      "default": "./src/layout/index.ts"
-    },
-    "./typography": {
-      "types": "./src/typography/index.ts",
-      "default": "./src/typography/index.ts"
-    },
-    "./tables": {
-      "types": "./src/tables/index.ts",
-      "default": "./src/tables/index.ts"
-    },
-    "./lists": {
-      "types": "./src/lists/index.ts",
-      "default": "./src/lists/index.ts"
-    },
-    "./cards": {
-      "types": "./src/cards/index.ts",
-      "default": "./src/cards/index.ts"
-    },
-    "./styles": {
-      "types": "./src/styles/index.ts",
-      "default": "./src/styles/index.ts"
-    },
-    "./utils": {
-      "types": "./src/utils/index.ts",
-      "default": "./src/utils/index.ts"
-    },
-    "./dossier": {
-      "types": "./src/dossier/index.ts",
-      "default": "./src/dossier/index.ts"
-    },
-    "./params": {
-      "types": "./src/params/index.ts",
-      "default": "./src/params/index.ts"
-    },
+    "./sheet-a4.css": "./src/core/sheet-a4.css",
+    "./sheet-letter.css": "./src/core/sheet-letter.css",
     "./pdf": {
       "types": "./src/pdf/index.d.ts",
       "default": "./src/pdf/index.js"
@@ -104,8 +48,7 @@
     "./vite": {
       "types": "./src/vite/index.d.ts",
       "default": "./src/vite/index.js"
-    },
-    "./tailwind.css": "./src/styles/papyrus.css"
+    }
   },
   "scripts": {
     "build": "tsc --noEmit",
@@ -114,28 +57,12 @@
     "test": "vitest run",
     "gen:sheets": "node scripts/gen-sheet-css.js"
   },
-  "dependencies": {
-    "clsx": "catalog:",
-    "tailwind-merge": "catalog:"
-  },
   "peerDependencies": {
     "playwright": "^1.40.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "tailwindcss": "^4.0.0",
     "vite": ">=5"
   },
   "peerDependenciesMeta": {
     "playwright": {
-      "optional": true
-    },
-    "react": {
-      "optional": true
-    },
-    "react-dom": {
-      "optional": true
-    },
-    "tailwindcss": {
       "optional": true
     },
     "vite": {
@@ -147,13 +74,8 @@
     "@n-uf/typescript-config": "workspace:*",
     "@n-uf/vitest-config": "workspace:*",
     "@types/node": "catalog:",
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
     "eslint": "catalog:",
     "playwright": "catalog:",
-    "react": "catalog:",
-    "react-dom": "catalog:",
-    "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"

@@ -1,5 +1,5 @@
 import React from "react";
-import { getTocSectionColor, type TOCSectionColorOptions } from "../core/index.js";
+import { getTocSectionColor, type TOCSectionColorOptions } from "@n-uf/papyrus";
 
 // =============================================================================
 // TOC Color Utilities
@@ -20,13 +20,13 @@ const tocLabelColors: Record<TOCLabelColor, { bg: string; border: string; badge:
   red: { bg: "rgba(239, 68, 68, 0.08)", border: "rgba(239, 68, 68, 0.2)", badge: "rgba(239, 68, 68, 0.15)", text: "rgb(185, 28, 28)" },
 };
 
-// Section colour resolution lives in core (framework-free); re-exported here.
+// Section colour resolution lives in the engine (`@n-uf/papyrus`); re-exported here.
 export {
   getTocSectionColor,
   TOC_DEFAULT_SECTION_COLOR,
   type TOCSectionColorOptions,
   type TOCSectionColors,
-} from "../core/index.js";
+} from "@n-uf/papyrus";
 
 // =============================================================================
 // Grid-based TOC Components (used in user-manual style)

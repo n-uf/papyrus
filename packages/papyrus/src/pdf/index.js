@@ -38,7 +38,7 @@ export const DEFAULT_BASE_URL = "http://localhost:5173";
 
 /**
  * Print-media overrides injected before printing a sheet. They target the
- * page contract (`.pdf-container` / `.pdf-page`, see `@n-uf/papyrus/core`)
+ * page contract (`.pdf-container` / `.pdf-page`, see `src/core/contract.js`)
  * produced by papyrus' layout components.
  *
  * @param {{ pageSize: string, width: string, height: string }} sheet

@@ -2,7 +2,8 @@
 /**
  * Write the ready-made sheet stylesheets (src/core/sheet-<name>.css) from
  * sheetCss(), for pages without a bundler: `<link rel="stylesheet"
- * href=".../@n-uf/papyrus/src/core/sheet-letter.css">`.
+ * href="node_modules/@n-uf/papyrus/src/core/sheet-letter.css">` (bundlers
+ * import `@n-uf/papyrus/sheet-letter.css`).
  *
  * Run after changing sheet.js: `pnpm --filter @n-uf/papyrus gen:sheets`.
  * A unit test fails while a file is out of date.

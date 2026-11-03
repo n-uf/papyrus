@@ -1,33 +1,50 @@
 # @n-uf/papyrus
 
-Documents engine: content-free building blocks for documents rendered as HTML and exported as A4 PDF.
-It contains no brand, copy or document content; the documents package supplies those.
+Documents engine for documents rendered as HTML and exported as PDF. Framework-free: no React, no
+Tailwind. It holds the page contract, sheet sizes and print CSS, the document registry, and the PDF
+exporter. It contains no brand, copy or document content.
 
-Ships TypeScript source for the React parts (`exports` point at `./src`) and plain ESM for the Node parts.
+The React components live in [`@n-uf/papyrus-react`](../papyrus-react), which builds on this package.
+
+Plain ESM JavaScript with type declarations, so it runs without a bundler: in a plain HTML page, in a
+bundled app, and in Node.
 
 ```sh
 pnpm add @n-uf/papyrus
 ```
 
-| Import                                                                                                           | What                                                                                   |
-| ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| `@n-uf/papyrus`                                                                                                  | everything below, re-exported                                                          |
-| `/layout`, `/typography`, `/containers`, `/cards`, `/tables`, `/lists`, `/indicator`, `/logo`, `/file-list`     | page and content blocks (`PDFPage`, `Logo`, `DocumentFooter`, `TOCItem`, ...)          |
-| `/dossier`                                                                                                       | document registry (`registerDoc`, `docRegistry`) and the `DocMeta` / `DocPageProps` types |
-| `/styles`                                                                                                        | `printStyles` (CSS string)                                                             |
-| `/tailwind.css`                                                                                                  | Tailwind v4 source stylesheet: `@import "@n-uf/papyrus/tailwind.css"`                  |
-| `/pdf`                                                                                                           | PDF export API (Playwright)                                                            |
-| `/vite`                                                                                                          | Vite dev-server plugin that serves `/docs/<id>.pdf`                                    |
+| Import                       | What                                                                                                 |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `@n-uf/papyrus`              | page contract (`PAGE_CLASS`, `PAGE_COUNT_ATTR`, ...), `SHEETS` + `sheetCss()`, document registry, `numberToc()`, TOC section colours, document parameters |
+| `/sheet-a4.css`, `/sheet-letter.css` | ready-made sheet stylesheets (`sheetCss()` output) for pages without a bundler           |
+| `/pdf`                       | PDF export API (Playwright)                                                                          |
+| `/server`                    | Web request handler that renders a document to a downloadable PDF                                    |
+| `/vite`                      | Vite dev-server plugin that serves `/docs/<id>.pdf`                                                  |
 
-## Branding
+## Page contract
 
-`Logo` and `DocumentFooter` render only what you pass:
+Each element with the class `pdf-page` (`PAGE_CLASS`) is one sheet on screen and one page in the PDF.
+`sheetCss(sheet)` sizes it and keeps one per printed page; the exporter counts those elements and checks
+the PDF against them (and against `data-papyrus-page-count`, when the page declares it).
 
-```tsx
-<Logo name={<MyWordmark />} variantTextLines={{ home: ["MADE BY"] }} />
-<DocumentFooter title="Report" copyright="© 2030 Acme" />
-<TOCItem number="1" title="Intro" page="3" section="market" sectionColors={{ market: "rgb(14, 116, 144)" }} />
+```js
+import { SHEETS, sheetCss } from "@n-uf/papyrus";
+
+const css = sheetCss(SHEETS.LETTER);                        // US Letter sheets
+const alt = sheetCss(SHEETS.A4, { pageClass: "page" });     // your own page class
 ```
+
+## Document registry
+
+```js
+import { docRegistry, numberToc } from "@n-uf/papyrus";
+
+docRegistry.register({ id: "report", meta: { title: "Report", pageCount: 4, toc }, component: render });
+numberToc(toc); // Map: entry id -> "1.", "2.", "A." (appendix) or null (skipped)
+```
+
+`component` is whatever renders the document; `@n-uf/papyrus-react/dossier` types it as a React component.
+There is one global registry per JavaScript realm, shared by every installed copy.
 
 ## PDF export
 
@@ -37,3 +54,5 @@ papyrus --help
 ```
 
 `playwright` and `vite` are optional peer dependencies, needed only for the PDF export and the Vite plugin.
+
+After changing `src/core/sheet.js`, regenerate the sheet stylesheets: `pnpm --filter @n-uf/papyrus gen:sheets`.
