@@ -1,4 +1,5 @@
 import React from "react";
+import { getTocSectionColor, type TOCSectionColorOptions } from "../core/index.js";
 
 // =============================================================================
 // TOC Color Utilities
@@ -19,53 +20,13 @@ const tocLabelColors: Record<TOCLabelColor, { bg: string; border: string; badge:
   red: { bg: "rgba(239, 68, 68, 0.08)", border: "rgba(239, 68, 68, 0.2)", badge: "rgba(239, 68, 68, 0.15)", text: "rgb(185, 28, 28)" },
 };
 
-/**
- * Neutral accent used for TOC numbers when a section has no configured color.
- */
-export const TOC_DEFAULT_SECTION_COLOR = "rgb(71, 85, 105)";
-
-/**
- * Section name -> number color. Keys are matched case-insensitively against
- * the `section` prop of {@link TOCItem}.
- */
-export type TOCSectionColors = Record<string, string>;
-
-export interface TOCSectionColorOptions {
-  /** Section name -> color (CSS color string). */
-  sectionColors?: TOCSectionColors;
-  /** Used when the section is missing or not listed. Defaults to {@link TOC_DEFAULT_SECTION_COLOR}. */
-  defaultSectionColor?: string;
-  /**
-   * Custom lookup for rules a plain map cannot express (e.g. prefixes). Return
-   * `undefined` to fall through to `sectionColors`.
-   */
-  resolveSectionColor?: (section: string) => string | undefined;
-}
-
-/**
- * Resolve the number color of a TOC entry from its section name.
- *
- * Order: `resolveSectionColor`, then `sectionColors` (case-insensitive), then
- * `defaultSectionColor`, then {@link TOC_DEFAULT_SECTION_COLOR}.
- */
-export function getTocSectionColor(
-  section: string | undefined,
-  { sectionColors, defaultSectionColor, resolveSectionColor }: TOCSectionColorOptions = {},
-): string {
-  const fallback = defaultSectionColor ?? TOC_DEFAULT_SECTION_COLOR;
-  if (!section) return fallback;
-
-  const custom = resolveSectionColor?.(section);
-  if (custom) return custom;
-
-  const normalized = section.toLowerCase();
-  if (sectionColors) {
-    for (const [name, color] of Object.entries(sectionColors)) {
-      if (name.toLowerCase() === normalized) return color;
-    }
-  }
-  return fallback;
-}
+// Section colour resolution lives in core (framework-free); re-exported here.
+export {
+  getTocSectionColor,
+  TOC_DEFAULT_SECTION_COLOR,
+  type TOCSectionColorOptions,
+  type TOCSectionColors,
+} from "../core/index.js";
 
 // =============================================================================
 // Grid-based TOC Components (used in user-manual style)
