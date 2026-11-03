@@ -5,7 +5,7 @@
  *
  * @example
  * ```tsx
- * import { registerDoc } from "@n-uf/papyrus/dossier";
+ * import { registerDoc } from "@n-uf/papyrus-react/dossier";
  * import { MyDocPage } from "./my-doc";
  *
  * // Register documents at app startup

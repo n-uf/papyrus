@@ -9,7 +9,7 @@
  * @example
  * ```tsx
  * // Register documents at app init
- * import { docRegistry } from "@n-uf/papyrus/dossier";
+ * import { docRegistry } from "@n-uf/papyrus-react/dossier";
  * import { MyDocPage } from "./my-doc";
  *
  * docRegistry.register({

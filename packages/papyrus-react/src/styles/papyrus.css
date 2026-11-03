@@ -4,7 +4,7 @@
  * Import this from the consuming app's Tailwind v4 entry stylesheet:
  *
  *   @import "tailwindcss";
- *   @import "@n-uf/papyrus/tailwind.css";
+ *   @import "@n-uf/papyrus-react/tailwind.css";
  *
  * Tailwind v4 does not scan node_modules by default; the @source directive
  * below makes the consuming app generate CSS for every utility class used
@@ -12,6 +12,6 @@
  * workspace link or node_modules).
  *
  * Papyrus ships no brand styles: the `logo-*` classes used by <Logo> and the
- * print styles (`printStyles` from `@n-uf/papyrus/styles`) belong to the host.
+ * print styles (`printStyles` from `@n-uf/papyrus-react/styles`) belong to the host.
  */
 @source "../**/*.{ts,tsx}";
