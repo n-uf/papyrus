@@ -3,7 +3,8 @@
 > Pull the React-free logic and the page contract out into `@n-uf/papyrus/core`; keep the React
 > components as a thin layer on top. No rewrite of the view components.
 
-Status: stage 1 built on `fl/papyrus-core` (2026-11-02); stages 2 to 4 not started.
+Status: stage 1 released (papyrus 0.4.0 + papyrus-react 0.4.0, 2026-11-03); stage 2 built on
+`fl/sheet-sizes` (2026-11-03); stage 3 (résumé) waits for its operator; stage 4 not started.
 
 **Decision (2026-11-02): two packages instead of a `/core` subpath.** `@n-uf/papyrus` is now the
 framework-free engine (what this proposal calls core, plus `/pdf`, `/server`, `/vite`); the React layer

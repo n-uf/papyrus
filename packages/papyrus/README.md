@@ -53,6 +53,28 @@ papyrus pdf --config papyrus.config.json
 papyrus --help
 ```
 
+Every PDF is checked before it is written: the number of page elements, the PDF's page count and the
+expected `pageCount` must agree, so a broken render is never saved.
+
+**Sheet size.** A4 by default. Set `"sheet": "letter"` (or a sheet object) for the whole config or per
+document; it sets the viewport, the print CSS and the PDF paper. `"pageSelector"` names the page elements
+when they are not `.pdf-page`. Web fonts are awaited before printing (`waitForFonts`, default on), so
+pagination does not depend on load timing.
+
+**Plain HTML.** Point `baseUrl` at a folder; no server needed:
+
+```json
+{
+  "baseUrl": "file:///Users/me/resume/src/",
+  "docUrl": "{id}.html",
+  "outDir": "../dist",
+  "docs": [{ "id": "resume", "sheet": "letter", "pageSelector": ".page", "pageCount": 3 }]
+}
+```
+
+The same options work in code: `renderPdf(browser, url, { sheet: "letter", pageSelector: ".page" })`.
+
 `playwright` and `vite` are optional peer dependencies, needed only for the PDF export and the Vite plugin.
+Set `PAPYRUS_CHROMIUM_PATH` to print with an installed Chrome/Chromium instead of Playwright's download.
 
 After changing `src/core/sheet.js`, regenerate the sheet stylesheets: `pnpm --filter @n-uf/papyrus gen:sheets`.
