@@ -1,4 +1,5 @@
 import React from "react";
+import { PAGE_CLASS } from "../core/index.js";
 
 /**
  * PDFPage - A4-sized page container for printable documents
@@ -16,7 +17,7 @@ export function PDFPage({
   return (
     <div
       id={id}
-      className="pdf-page relative flex flex-col"
+      className={`${PAGE_CLASS} relative flex flex-col`}
       style={{ background: "#f3f4f6" }}
     >
       {children}

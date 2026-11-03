@@ -1,4 +1,5 @@
 import React from "react";
+import { MAIN_CONTENT_CLASS } from "../core/index.js";
 
 /**
  * MainContent - Primary content area with left padding for sidebar
@@ -16,7 +17,7 @@ export function MainContent({
 }): React.ReactNode {
   return (
     <div
-      className="pdf-main-content pt-6 pr-6 pb-6 flex-1 flex flex-col"
+      className={`${MAIN_CONTENT_CLASS} pt-6 pr-6 pb-6 flex-1 flex flex-col`}
       style={{ paddingLeft: `${sidebarWidth}px` }}
     >
       {children}
