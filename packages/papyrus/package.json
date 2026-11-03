@@ -35,6 +35,12 @@
       "types": "./src/index.ts",
       "default": "./src/index.ts"
     },
+    "./core": {
+      "types": "./src/core/index.d.ts",
+      "default": "./src/core/index.js"
+    },
+    "./core/sheet-a4.css": "./src/core/sheet-a4.css",
+    "./core/sheet-letter.css": "./src/core/sheet-letter.css",
     "./indicator": {
       "types": "./src/indicator/index.ts",
       "default": "./src/indicator/index.ts"
@@ -121,6 +127,12 @@
   },
   "peerDependenciesMeta": {
     "playwright": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
       "optional": true
     },
     "tailwindcss": {

@@ -6,6 +6,28 @@
 // package, never here.
 
 // =============================================================================
+// CORE
+// =============================================================================
+// Framework-free page contract, sheet sizes and TOC numbering. The registry,
+// TOC colours and document parameters are re-exported by their React-facing
+// modules below; import `@n-uf/papyrus/core` for the untyped-component forms.
+
+export {
+  AVOID_BREAK_CLASS,
+  CONTAINER_CLASS,
+  getSheet,
+  MAIN_CONTENT_CLASS,
+  NO_PRINT_CLASS,
+  numberToc,
+  PAGE_CLASS,
+  PAGE_COUNT_ATTR,
+  SHEETS,
+  sheetCss,
+  type SheetCssOptions,
+  type SheetSize,
+} from "./core/index.js";
+
+// =============================================================================
 // INDICATOR
 // =============================================================================
 // LED-style status pip primitive
