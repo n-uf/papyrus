@@ -174,6 +174,10 @@ Small additions so the exporter handles any sheet size and plain-HTML documents:
    `sheet-letter.css`; a `papyrus.config.json` with `sheet: "LETTER"` and `pageCount: 3`; `build.sh`
    calls the papyrus CLI. Operator: provide access to the package (see below), then compare the old
    and new PDFs. Ends with: same 3 pages, links still clickable, no visible difference.
+   Found in the stage 2 try (2026-11-03): printed through the papyrus CLI with a copy that has
+   `<!doctype html>` (as `build.sh` adds it), all 3 pages are pixel-identical to the résumé's own
+   Chrome build, with the same 8 links. Without the doctype, page 1 lays out in quirks mode and shifts
+   slightly, so the résumé's `resume.html` should carry `<!doctype html>` itself.
 4. **Later, only when a second non-React consumer shows up:** a vanilla or web-component wrapper for a
    block that consumer actually needs.
 
