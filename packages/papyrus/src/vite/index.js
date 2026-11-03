@@ -58,6 +58,15 @@ export function papyrusPdfPlugin(options = {}) {
     configureServer(server) {
       const loaded = findConfig(options.config, server.config.root);
 
+      /** Sheet and page elements for `id`: its config entry, then the config, then the defaults. */
+      const renderOptions = (id) => {
+        const entry = loaded && normalizeDocs(loaded.config.docs).find((d) => d.id === id);
+        return {
+          sheet: entry?.sheet ?? loaded?.config.sheet,
+          pageSelector: entry?.pageSelector ?? loaded?.config.pageSelector,
+        };
+      };
+
       /** Documents `papyrus pdf` exports (all, when there is no config). */
       const exported = (id) => !loaded || normalizeDocs(loaded.config.docs).some((d) => d.id === id);
 
@@ -104,7 +113,7 @@ export function papyrusPdfPlugin(options = {}) {
         const start = Date.now();
 
         getBrowser()
-          .then((b) => renderPdf(b, url))
+          .then((b) => renderPdf(b, url, renderOptions(id)))
           .then((pdf) => {
             // Only the default rendering of an exported document becomes the committed file
             if (!withParams && exported(id)) {

@@ -43,13 +43,18 @@ ${DEFAULT_CONFIG_FILE}:
     "outDir": "apps/viewer/public/docs",
     "baseUrl": "http://localhost:5173",
     "docUrl": "/docs/{id}?print=true",
+    "sheet": "A4",
     "sources": ["packages/docs/src/shared"],
     "docs": ["user-manual", { "id": "annual-report", "filename": "annual-report-2026.pdf",
-             "sources": ["packages/docs/src/annual-report"] }]
+             "sources": ["packages/docs/src/annual-report"] },
+             { "id": "resume", "sheet": "letter", "pageSelector": ".page", "pageCount": 3 }]
   }
 
   "sources" (shared) and per-document "sources" are fingerprinted into
   <outDir>/papyrus-manifest.json when a PDF is printed; --check compares them.
+  "sheet" ("A4" default, or "letter") and "pageSelector" (page elements,
+  default ".pdf-page") apply to every document; a document's own wins.
+  Plain HTML files work too: "baseUrl": "file:///path/to/site/", "docUrl": "{id}.html".
 `;
 
 const FLAGS = new Set(["check"]);
@@ -110,6 +115,8 @@ async function pdfCommand(args) {
     outDir,
     docs: config.docs,
     docUrl: config.docUrl,
+    sheet: config.sheet,
+    pageSelector: config.pageSelector,
     only: args.only,
     config,
     configDir: dir,
