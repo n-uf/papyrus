@@ -1,9 +1,10 @@
 /**
  * Doc Registry - Document component registration and lookup
  *
- * Provides a global registry for mapping document IDs to their
- * React components and metadata. Documents are registered at app
- * startup and looked up when opening in the dossier.
+ * The React face of core's document registry: the same global instance
+ * (`@n-uf/papyrus/core` `docRegistry`), typed so each document is rendered
+ * by a React component. Documents are registered at app startup and looked
+ * up when opening in the dossier.
  *
  * @example
  * ```tsx
@@ -33,68 +34,26 @@
  * ```
  */
 
-import type { DocRegistry, RegisteredDoc } from "./doc-dossier-types";
-
-// =============================================================================
-// REGISTRY IMPLEMENTATION
-// =============================================================================
+import type React from "react";
+import {
+  createDocRegistry as createCoreDocRegistry,
+  docRegistry as coreDocRegistry,
+} from "../core/index.js";
+import type { DocPageProps, DocRegistry, RegisteredDoc } from "./doc-dossier-types";
 
 /**
  * Create a new document registry
  */
 export function createDocRegistry(): DocRegistry {
-  const docs = new Map<string, RegisteredDoc>();
-
-  return {
-    get(docId: string): RegisteredDoc | undefined {
-      return docs.get(docId);
-    },
-
-    getIds(): string[] {
-      return Array.from(docs.keys());
-    },
-
-    has(docId: string): boolean {
-      return docs.has(docId);
-    },
-
-    register(doc: RegisteredDoc): void {
-      if (docs.has(doc.id)) {
-        console.warn(
-          `[DocRegistry] Document "${doc.id}" is already registered. Overwriting.`,
-        );
-      }
-      docs.set(doc.id, doc);
-    },
-  };
-}
-
-// =============================================================================
-// GLOBAL REGISTRY INSTANCE
-// =============================================================================
-
-/**
- * Key under which the global registry is stored on `globalThis`.
- *
- * Papyrus ships TypeScript source, so an app can end up with two installed
- * copies (for example the one a UI kit depends on and the one the app depends
- * on). A module-level registry would then split in two: documents registered
- * through one copy would not be found through the other. Sharing the instance
- * through `Symbol.for` keeps one registry per JavaScript realm.
- */
-const DOC_REGISTRY_KEY = Symbol.for("@n-uf/papyrus/docRegistry");
-
-function getGlobalRegistry(): DocRegistry {
-  const store = globalThis as unknown as Record<symbol, DocRegistry | undefined>;
-  return (store[DOC_REGISTRY_KEY] ??= createDocRegistry());
+  return createCoreDocRegistry<React.ComponentType<DocPageProps>>();
 }
 
 /**
  * Global document registry instance, shared by every copy of papyrus loaded in
- * the same realm. Use this for most cases. Create custom registries with
- * {@link createDocRegistry} for isolated contexts.
+ * the same realm (it is core's global registry). Use this for most cases.
+ * Create custom registries with {@link createDocRegistry} for isolated contexts.
  */
-export const docRegistry: DocRegistry = getGlobalRegistry();
+export const docRegistry: DocRegistry = coreDocRegistry as DocRegistry;
 
 // =============================================================================
 // HELPER FUNCTIONS
