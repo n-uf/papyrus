@@ -1,8 +1,9 @@
 /**
  * Papyrus PDF export
  *
- * Prints the HTML rendering of a document (the viewer's print route) to an A4
- * PDF with Playwright's Chromium. Content-free: document ids, output folder
+ * Prints the HTML rendering of a document (the viewer's print route, or any
+ * page with fixed sheets) to a PDF with Playwright's Chromium: A4 by default,
+ * or another sheet size (`sheet`). Content-free: document ids, output folder
  * and URL shape come from the caller or from a `papyrus.config.json`.
  *
  * Plain ESM JavaScript (typed by ./index.d.ts) so it runs under bare Node,
@@ -16,7 +17,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
-import { CONTAINER_CLASS, NO_PRINT_CLASS, PAGE_CLASS, PAGE_COUNT_ATTR, SHEETS } from "../core/index.js";
+import { CONTAINER_CLASS, NO_PRINT_CLASS, PAGE_CLASS, PAGE_COUNT_ATTR, SHEETS, getSheet } from "../core/index.js";
 import { docSources, fingerprintSources, pdfStatus, readManifest, writeManifest } from "./fingerprint.js";
 
 export {
@@ -36,29 +37,57 @@ export const DEFAULT_CONFIG_FILE = "papyrus.config.json";
 export const DEFAULT_DOC_URL = "/docs/{id}?print=true";
 export const DEFAULT_BASE_URL = "http://localhost:5173";
 
+/** Default page elements: the page contract's `.pdf-page`. */
+export const DEFAULT_PAGE_SELECTOR = `.${PAGE_CLASS}`;
+
+/**
+ * A sheet from a name ("A4", "letter") or a sheet object; default A4.
+ *
+ * @param {string | { name?: string, pageSize: string, width: string, height: string, viewport: {width:number,height:number} } | undefined} sheet
+ */
+export function resolveSheet(sheet) {
+  if (sheet == null) return SHEETS.A4;
+  if (typeof sheet === "string") return getSheet(sheet);
+  for (const key of ["pageSize", "width", "height", "viewport"]) {
+    if (!sheet[key]) throw new Error(`Invalid sheet: missing "${key}" in ${JSON.stringify(sheet)}`);
+  }
+  return sheet;
+}
+
 /**
  * Print-media overrides injected before printing a sheet. They target the
- * page contract (`.pdf-container` / `.pdf-page`, see `src/core/contract.js`)
- * produced by papyrus' layout components.
+ * page contract (`.pdf-container` / page elements, see `src/core/contract.js`)
+ * produced by papyrus' layout components or by a plain page.
  *
- * @param {{ pageSize: string, width: string, height: string }} sheet
+ * @param {{ pageSize: string, width: string, height: string }} [sheet] default A4
+ * @param {{ pageSelector?: string }} [options] page elements, default `.pdf-page`
  */
-function exportPrintCss(sheet) {
+export function pdfPrintCss(sheet = SHEETS.A4, { pageSelector = DEFAULT_PAGE_SELECTOR } = {}) {
   return `
   @page { size: ${sheet.pageSize}; margin: 0; }
   html, body { height: auto !important; width: ${sheet.width} !important; overflow: visible !important; margin: 0 !important; padding: 0 !important; }
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   #root { height: auto !important; overflow: visible !important; }
   .${CONTAINER_CLASS} { background: none !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; display: block !important; }
-  .${PAGE_CLASS} { display: flex !important; flex-direction: column !important; width: ${sheet.width} !important; height: ${sheet.height} !important; overflow: visible !important; margin: 0 !important; box-shadow: none !important; page-break-after: always; break-after: page; }
-  .${PAGE_CLASS}:last-child { page-break-after: auto; break-after: auto; }
+  ${pageSelector} { display: flex !important; flex-direction: column !important; width: ${sheet.width} !important; height: ${sheet.height} !important; overflow: visible !important; margin: 0 !important; box-shadow: none !important; page-break-after: always; break-after: page; }
+  ${pageSelector}:last-child { page-break-after: auto; break-after: auto; }
   .${NO_PRINT_CLASS} { display: none !important; }
   [class*="opacity-"] { opacity: 1 !important; }
 `;
 }
 
 /** Print-media overrides injected before printing an A4 document. */
-export const PDF_PRINT_CSS = exportPrintCss(SHEETS.A4);
+export const PDF_PRINT_CSS = pdfPrintCss(SHEETS.A4);
+
+/**
+ * Paper size for `page.pdf()`: Playwright's own format for a preset sheet
+ * (A4 output stays exactly as before), else the sheet's width and height.
+ */
+export function pdfPaper(sheet) {
+  if (sheet === SHEETS.A4) return { format: "A4" };
+  if (sheet === SHEETS.LETTER) return { format: "Letter" };
+  return { width: sheet.width, height: sheet.height };
+}
 
 /** Load Playwright from this package's context, then from the caller's cwd. */
 export async function loadPlaywright() {
@@ -109,24 +138,32 @@ export function countPdfPages(pdf) {
 /**
  * Render one URL to a PDF buffer.
  *
+ * The sheet (`options.sheet`: "A4", "letter" or a sheet object; default A4)
+ * sets the viewport, the injected print CSS and the PDF paper size; each can
+ * still be overridden on its own (`viewport`, `css`).
+ *
  * Fails (so a bad render can never be saved or committed) when the page has
- * no `.pdf-page` elements (e.g. "document not found"), when the PDF's page
- * count differs from the number of `.pdf-page` elements, or when it differs
- * from the expected count. The expected count is `options.expectedPages`, else
- * the `data-papyrus-page-count` attribute the viewer puts on the document
- * (the document's `meta.pageCount`), when present.
+ * no page elements (`options.pageSelector`, default `.pdf-page`; e.g.
+ * "document not found"), when the PDF's page count differs from the number
+ * of page elements, or when it differs from the expected count. The expected
+ * count is `options.expectedPages`, else the `data-papyrus-page-count`
+ * attribute the viewer puts on the document (the document's
+ * `meta.pageCount`), when present.
  *
  * @param {import("playwright").Browser} browser
  * @param {string} url
- * @param {{ viewport?: {width:number,height:number}, settleMs?: number, timeoutMs?: number, css?: string, expectedPages?: number }} [options]
+ * @param {import("./index").RenderPdfOptions} [options]
  * @returns {Promise<Buffer>}
  */
 export async function renderPdf(browser, url, options = {}) {
+  const sheet = resolveSheet(options.sheet);
   const {
-    viewport = A4_VIEWPORT,
+    pageSelector = DEFAULT_PAGE_SELECTOR,
+    viewport = { ...sheet.viewport },
     settleMs = 2_000,
     timeoutMs = 30_000,
-    css = PDF_PRINT_CSS,
+    css = pdfPrintCss(sheet, { pageSelector }),
+    waitForFonts = true,
     headers,
   } = options;
   const page = await browser.newPage({ viewport });
@@ -134,6 +171,8 @@ export async function renderPdf(browser, url, options = {}) {
     // e.g. the reader's session cookie, when the documents sit behind a login
     if (headers) await page.setExtraHTTPHeaders(headers);
     await page.goto(url, { waitUntil: "networkidle", timeout: timeoutMs });
+    // Web fonts change text metrics, and with them what fits on a sheet.
+    if (waitForFonts) await page.evaluate(() => document.fonts?.ready.then(() => undefined));
     await page.waitForTimeout(settleMs);
     await page.emulateMedia({ media: "print" });
     await page.addStyleTag({ content: css });
@@ -145,11 +184,11 @@ export async function renderPdf(browser, url, options = {}) {
           declared: attr ? Number(attr) : null,
         };
       },
-      { countAttr: PAGE_COUNT_ATTR, pageSelector: `.${PAGE_CLASS}` },
+      { countAttr: PAGE_COUNT_ATTR, pageSelector },
     );
     const expected = options.expectedPages ?? dom.declared;
     const pdf = await page.pdf({
-      format: "A4",
+      ...pdfPaper(sheet),
       printBackground: true,
       displayHeaderFooter: false,
       margin: { top: "0", right: "0", bottom: "0", left: "0" },
@@ -157,10 +196,10 @@ export async function renderPdf(browser, url, options = {}) {
     const buffer = Buffer.from(pdf);
     const actual = countPdfPages(buffer);
     if (dom.pages === 0) {
-      throw new Error(`${url}: no .pdf-page elements rendered (document not found or blank page)`);
+      throw new Error(`${url}: no ${pageSelector} elements rendered (document not found or blank page)`);
     }
     if (actual !== dom.pages) {
-      throw new Error(`${url}: PDF has ${actual} page(s) but the document renders ${dom.pages} .pdf-page element(s)`);
+      throw new Error(`${url}: PDF has ${actual} page(s) but the document renders ${dom.pages} ${pageSelector} element(s)`);
     }
     if (expected != null && actual !== expected) {
       throw new Error(`${url}: PDF has ${actual} page(s), expected ${expected}`);
@@ -171,12 +210,22 @@ export async function renderPdf(browser, url, options = {}) {
   }
 }
 
-/** Normalise `docs` entries (string | {id, filename?, pageCount?, sources?}) to {id, filename, pageCount?, sources}. */
+/**
+ * Normalise `docs` entries (string | {id, filename?, pageCount?, sources?, sheet?, pageSelector?})
+ * to {id, filename, pageCount?, sources, sheet?, pageSelector?}.
+ */
 export function normalizeDocs(docs) {
   return (docs ?? []).map((entry) => {
     const doc = typeof entry === "string" ? { id: entry } : entry;
     if (!doc || !doc.id) throw new Error(`Invalid docs entry: ${JSON.stringify(entry)}`);
-    return { id: doc.id, filename: doc.filename ?? `${doc.id}.pdf`, pageCount: doc.pageCount, sources: doc.sources ?? [] };
+    return {
+      id: doc.id,
+      filename: doc.filename ?? `${doc.id}.pdf`,
+      pageCount: doc.pageCount,
+      sources: doc.sources ?? [],
+      sheet: doc.sheet,
+      pageSelector: doc.pageSelector,
+    };
   });
 }
 
@@ -226,7 +275,9 @@ export function readConfig(configPath) {
  * @param {object} options
  * @param {string} options.baseUrl     Running server, e.g. http://localhost:5173
  * @param {string} options.outDir      Absolute output folder
- * @param {Array<string|{id:string,filename?:string,pageCount?:number}>} options.docs
+ * @param {Array<string|{id:string,filename?:string,pageCount?:number,sheet?:string|object,pageSelector?:string}>} options.docs
+ * @param {string|object} [options.sheet]          Default sheet for every doc ("A4", "letter"); a doc's own `sheet` wins
+ * @param {string} [options.pageSelector]          Default page elements; a doc's own `pageSelector` wins
  * @param {string} [options.docUrl]    URL template, default "/docs/{id}?print=true"
  * @param {string} [options.only]      Restrict to one doc id
  * @param {(msg: string) => void} [options.log]
@@ -258,6 +309,8 @@ export async function exportPdfs(options) {
       try {
         const pdf = await renderPdf(browser, buildDocUrl(baseUrl, docUrl, doc.id), {
           ...options,
+          sheet: doc.sheet ?? options.sheet,
+          pageSelector: doc.pageSelector ?? options.pageSelector,
           expectedPages: doc.pageCount,
         });
         fs.writeFileSync(outputPath, pdf);
