@@ -1,5 +1,11 @@
 # @n-uf/papyrus
 
+## 0.4.1
+
+### Patch Changes
+
+- 76bbfd2: The PDF exporter prints any sheet size. `renderPdf`, `exportPdfs`, the Vite plugin and `papyrus.config.json` (whole config or per document) take `sheet` (`"A4"`, the default, or `"letter"` or a sheet object), which sets the viewport, the print CSS and the PDF paper, and `pageSelector` (one selector, default `.pdf-page`) for pages that use another class; such pages keep their own layout. Web fonts are awaited before printing (`waitForFonts`, default on, at most 10 s). Plain HTML prints from a `file:///` base URL without a server. A PDF printed on a non-default sheet or selector records it as `layout` in the manifest, so `papyrus pdf --check` reports it stale when the config changes it; existing manifests stay valid. A4 output with the defaults is unchanged. New helpers: `resolveSheet`, `resolvePageSelector`, `pdfPrintCss`, `pdfPaper`, `printLayout`, `DEFAULT_PAGE_SELECTOR`.
+
 ## 0.4.0
 
 ### Minor Changes
