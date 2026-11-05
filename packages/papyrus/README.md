@@ -80,3 +80,15 @@ The same options work in code: `renderPdf(browser, url, { sheet: "letter", pageS
 Set `PAPYRUS_CHROMIUM_PATH` to print with an installed Chrome/Chromium instead of Playwright's download.
 
 After changing `src/core/sheet.js`, regenerate the sheet stylesheets: `pnpm --filter @n-uf/papyrus gen:sheets`.
+
+## Versions
+
+Calendar versions `YY.M.R`, like hypr-tiling, doodl and debugsy: `26.11.0` is the first release of
+November 2026. `@n-uf/papyrus` and `@n-uf/papyrus-react` always share one version. Releases up to
+`0.4.1` used semver and sort below every calendar version. See
+[`_agent/versioning-policy.md`](_agent/versioning-policy.md).
+
+## License
+
+[PolyForm Perimeter 1.0.1](https://polyformproject.org/licenses/perimeter/1.0.1), the same license as
+hypr-tiling; see [`LICENSE`](LICENSE).

@@ -37,3 +37,13 @@ The PDF exporter, the request handler and the Vite plugin are in `@n-uf/papyrus`
 Up to 0.3, these components were part of `@n-uf/papyrus`. Replace `@n-uf/papyrus` with
 `@n-uf/papyrus-react` in component, `/dossier`, `/params`, `/styles` and `/tailwind.css` imports, and
 `transpilePackages`. Imports of `@n-uf/papyrus/pdf`, `/server` and `/vite` stay as they are.
+
+## Versions
+
+Calendar versions `YY.M.R`, always the same as `@n-uf/papyrus`'s (see its
+[versioning policy](../papyrus/_agent/versioning-policy.md)). Releases up to `0.4.0` used semver.
+
+## License
+
+[PolyForm Perimeter 1.0.1](https://polyformproject.org/licenses/perimeter/1.0.1), the same license as
+hypr-tiling; see [`LICENSE`](LICENSE).
