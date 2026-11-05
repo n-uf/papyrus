@@ -8,7 +8,7 @@ import { packageBoundaries } from "@n-uf/eslint-config/package-boundaries";
 // its browser globals (src/core runs in the browser).
 export default [
   ...config,
-  nodeFiles(["src/pdf/**/*.js", "src/vite/**/*.js", "scripts/**/*.js"]),
+  nodeFiles(["src/pdf/**/*.js", "src/vite/**/*.js", "scripts/**/*.{js,mjs}"]),
   ...packageBoundaries({ forbid: ["@n-uf/angiospermae", "@n-uf/harbuz", "@n-uf/kavun", "@n-uf/papyrus-react"] }),
   // core runs anywhere: no React, no Node, nothing outside src/core.
   {
