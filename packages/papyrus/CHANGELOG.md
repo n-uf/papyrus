@@ -1,5 +1,10 @@
 # @n-uf/papyrus
 
+## 26.11.0
+
+- Calendar versions (`YY.M.R`) from now on, like hypr-tiling, doodl and debugsy; `@n-uf/papyrus-react` shares the version. Same code as 0.4.1: `^0.4.x` ranges do not pick this up, so move them to `^26.11.0`.
+- License: PolyForm Perimeter 1.0.1 (was `UNLICENSED`); see `LICENSE`.
+
 ## 0.4.1
 
 ### Patch Changes

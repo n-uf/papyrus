@@ -1,5 +1,10 @@
 # @n-uf/papyrus-react
 
+## 26.11.0
+
+- Calendar versions (`YY.M.R`) from now on, always the same as `@n-uf/papyrus`'s. Same code as 0.4.0, now on `@n-uf/papyrus` 26.11.0: `^0.4.x` ranges do not pick this up, so move them to `^26.11.0`.
+- License: PolyForm Perimeter 1.0.1 (was `UNLICENSED`); see `LICENSE`.
+
 ## 0.4.0
 
 ### Minor Changes

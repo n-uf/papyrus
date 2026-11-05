@@ -1,6 +1,6 @@
 {
   "name": "@n-uf/papyrus-react",
-  "version": "0.4.0",
+  "version": "26.11.0",
   "description": "React components for the papyrus documents engine: content-free page and content blocks, the React-typed document registry and print styles",
   "license": "LicenseRef-PolyForm-Perimeter-1.0.1",
   "type": "module",
