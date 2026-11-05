@@ -9,9 +9,14 @@
 // year/month and resets to `0` when the month changes, then skips any BURNED
 // value.
 //
-// Burned versions: npm permanently reserves an unpublished version number, so
-// a mis-numbered publish that was unpublished can never be reused. Record every
-// burned number here; the month's `R` counter starts after it.
+// Burned versions: a registry may keep an unpublished/deleted version number
+// reserved (npm always does), so a mis-numbered publish that was removed must
+// never be reused. Record every burned number here; the month's `R` counter
+// starts after it.
+//
+// `R` follows the version in package.json, not the registry: keep one papyrus
+// release PR open at a time, or two PRs can both claim the same number (the
+// second publish would be skipped silently).
 //
 // Usage (from the repo root): `pnpm papyrus:next-version` prints the next
 // version; `pnpm papyrus:version` writes it to both package.json files.
@@ -69,8 +74,13 @@ function writeVersion(file, version) {
 }
 
 function main() {
+  // The release date is the operator's local date (as in hypr-tiling and
+  // debugsy): late on the 30th in California is still that month, not UTC's next.
   const todayOverride = process.env.CALENDAR_VERSION_TODAY;
-  const today = todayOverride ? new Date(`${todayOverride}T12:00:00Z`) : new Date();
+  const local = new Date();
+  const today = todayOverride
+    ? new Date(`${todayOverride}T12:00:00Z`)
+    : new Date(Date.UTC(local.getFullYear(), local.getMonth(), local.getDate(), 12));
   if (Number.isNaN(today.getTime())) {
     console.error(`CALENDAR_VERSION_TODAY "${todayOverride}" is not a YYYY-MM-DD date.`);
     process.exit(1);

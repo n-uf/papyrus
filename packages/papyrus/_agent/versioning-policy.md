@@ -21,11 +21,16 @@ calendar release on its own.
 ## How to release
 
 1. In the release PR, from the repo root: `pnpm papyrus:version`. It computes `YY.M` from today's
-   date, continues `R` within the month (or starts at `0`), skips every burned version, and writes the
-   result to both package.json files. `pnpm papyrus:next-version` only prints it.
+   local date, continues `R` within the month (or starts at `0`), skips every burned version, and
+   writes the result to both package.json files. `pnpm papyrus:next-version` only prints it.
 2. Add a `## <version>` entry at the top of both CHANGELOG.md files.
 3. Merge to `main`: the Release workflow's `changeset publish` publishes every version that is not on
    the registry yet.
+
+- **One papyrus release PR at a time.** `R` follows package.json, not the registry: two open release
+  PRs would both claim the same number, and the second publish would be skipped without an error.
+- **Month changed before the merge?** Re-run `pnpm papyrus:version` (and fix the CHANGELOG heading),
+  so a release merged in December is not published as `26.11.x`.
 
 **Never add a changeset for these two packages.** Changesets would bump the calendar version as
 semver (a "minor" turns `26.11.3` into `26.12.0`, a "major" into `27.0.0`).
@@ -36,8 +41,8 @@ of the same year.
 
 ## Burned versions
 
-A version that was published and then unpublished can never be reused (npm reserves the number, and
-it no longer shows in `npm view … versions`). Record it in `BURNED_VERSIONS` in
+A version that was published and then unpublished or deleted must never be reused (npm reserves the
+number for good and it no longer shows in `npm view … versions`; treat GitHub Packages the same way). Record it in `BURNED_VERSIONS` in
 `scripts/calendar-version-bump.mjs` and here; the month's `R` counter skips it.
 
 | Version | Why it is burned | Recorded |
