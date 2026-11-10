@@ -6,15 +6,16 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/n-uf/angiospermae.git",
+    "url": "git+https://github.com/n-uf/papyrus.git",
     "directory": "packages/papyrus-react"
   },
+  "homepage": "https://github.com/n-uf/papyrus#readme",
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com",
-    "access": "restricted"
+    "access": "public"
   },
   "files": [
     "src",
+    "CHANGELOG.md",
     "!src/**/*.stories.*",
     "!src/**/*.test.*",
     "!src/**/*.spec.*",
