@@ -8,6 +8,10 @@ Status: stage 1 released (papyrus 0.4.0 + papyrus-react 0.4.0, 2026-11-03); stag
 2026-11-04); stage 4 not started. Since 26.11.0 both packages use calendar versions
 (`versioning-policy.md`).
 
+Written while papyrus lived in `n-uf/angiospermae` (kavun and greenhouse were its neighbours there);
+since 2026-11-09 it is its own repo, `n-uf/papyrus`, and published to npmjs too, so the "package
+access for the résumé" notes below are history.
+
 **Decision (2026-11-02): two packages instead of a `/core` subpath.** `@n-uf/papyrus` is now the
 framework-free engine (what this proposal calls core, plus `/pdf`, `/server`, `/vite`); the React layer
 is a new package, `@n-uf/papyrus-react`, with the old subpaths (same pattern as `@n-uf/doodl` +

@@ -9,7 +9,7 @@ exporter. It contains no brand, copy or document content.
 >
 > **@n-uf/papyrus is young and still changing. Its API, page contract and sheet styling are not final.**
 >
-> Version numbers are dates (YY.M.R), not semantic versions, so any release may break things, including the page contract, the sheet sizes and print CSS, the document registry, and the PDF exporter, request handler and Vite plugin. Pin an exact version and read the [CHANGELOG](https://github.com/n-uf/angiospermae/blob/main/packages/papyrus/CHANGELOG.md) before you upgrade.
+> Version numbers are dates (YY.M.R), not semantic versions, so any release may break things, including the page contract, the sheet sizes and print CSS, the document registry, and the PDF exporter, request handler and Vite plugin. Pin an exact version and read the [CHANGELOG](https://github.com/n-uf/papyrus/blob/main/packages/papyrus/CHANGELOG.md) before you upgrade.
 
 The React components live in [`@n-uf/papyrus-react`](../papyrus-react), which builds on this package.
 
@@ -92,8 +92,9 @@ After changing `src/core/sheet.js`, regenerate the sheet stylesheets: `pnpm --fi
 
 Calendar versions `YY.M.R`, like hypr-tiling, doodl and debugsy: `26.11.0` is the first release of
 November 2026. `@n-uf/papyrus` and `@n-uf/papyrus-react` always share one version. Releases up to
-`0.4.1` used semver and sort below every calendar version. See
-[`_agent/versioning-policy.md`](_agent/versioning-policy.md).
+`0.4.1` used semver and sort below every calendar version. Published to npmjs (with provenance) and
+GitHub Packages from [n-uf/papyrus](https://github.com/n-uf/papyrus). See
+[`_agent/versioning-policy.md`](../../_agent/versioning-policy.md).
 
 ## License
 
