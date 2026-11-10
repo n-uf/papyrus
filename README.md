@@ -1,6 +1,10 @@
 # papyrus
 
-Documents rendered as HTML and exported as PDF. Two packages, always released together at one version:
+Documents rendered as HTML and exported as PDF.
+
+Overview page: [n-uf.com/papyrus](https://n-uf.com/papyrus)
+
+Two packages, always released together at one version:
 
 | Package | Folder | What |
 | --- | --- | --- |
