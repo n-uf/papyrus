@@ -1,0 +1,30 @@
+{
+  "name": "@n-uf/eslint-config",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "license": "UNLICENSED",
+  "exports": {
+    "./base": "./base.js",
+    "./react": "./react.js",
+    "./node": "./node.js",
+    "./package-boundaries": "./package-boundaries.js"
+  },
+  "dependencies": {
+    "@eslint/js": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "globals": "^17.4.0",
+    "typescript-eslint": "^8.57.1"
+  },
+  "peerDependencies": {
+    "eslint": "^9.0.0"
+  },
+  "scripts": {
+    "test": "node --test \"test/**/*.test.js\""
+  },
+  "devDependencies": {
+    "eslint": "catalog:"
+  }
+}

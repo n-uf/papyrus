@@ -1,0 +1,8 @@
+{
+  "name": "@n-uf/fixture",
+  "private": true,
+  "dependencies": { "clsx": "^2.0.0" },
+  "peerDependencies": { "react": "^19.0.0" },
+  "optionalDependencies": { "playwright": "^1.0.0" },
+  "devDependencies": { "vitest": "^4.0.0", "@types/react": "^19.0.0" }
+}
