@@ -4,6 +4,13 @@ Documents engine for documents rendered as HTML and exported as PDF. Framework-f
 Tailwind. It holds the page contract, sheet sizes and print CSS, the document registry, and the PDF
 exporter. It contains no brand, copy or document content.
 
+> [!CAUTION]
+> ## Not yet stable
+>
+> **@n-uf/papyrus is young and still changing. Its API, page contract and sheet styling are not final.**
+>
+> Version numbers are dates (YY.M.R), not semantic versions, so any release may break things, including the page contract, the sheet sizes and print CSS, the document registry, and the PDF exporter, request handler and Vite plugin. Pin an exact version and read the [CHANGELOG](https://github.com/n-uf/angiospermae/blob/main/packages/papyrus/CHANGELOG.md) before you upgrade.
+
 The React components live in [`@n-uf/papyrus-react`](../papyrus-react), which builds on this package.
 
 Plain ESM JavaScript with type declarations, so it runs without a bundler: in a plain HTML page, in a

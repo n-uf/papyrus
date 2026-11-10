@@ -4,6 +4,13 @@ React components for the [`@n-uf/papyrus`](../papyrus) documents engine: content
 for documents rendered as HTML and exported as A4 PDF. It contains no brand, copy or document content;
 the documents package supplies those.
 
+> [!CAUTION]
+> ## Not yet stable
+>
+> **@n-uf/papyrus-react is young and still changing. Its components, props and print styling are not final.**
+>
+> Version numbers are dates (YY.M.R), not semantic versions, so any release may break things, including component props, the print styles and the Tailwind stylesheet. Pin an exact version and read the [CHANGELOG](https://github.com/n-uf/angiospermae/blob/main/packages/papyrus-react/CHANGELOG.md) before you upgrade.
+
 Ships TypeScript source (`exports` point at `./src`); list it in a Next.js app's `transpilePackages`.
 
 ```sh
