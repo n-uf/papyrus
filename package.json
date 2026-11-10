@@ -1,0 +1,26 @@
+{
+  "name": "papyrus-workspace",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Workspace for @n-uf/papyrus (documents engine) and @n-uf/papyrus-react (its React components)",
+  "license": "LicenseRef-PolyForm-Perimeter-1.0.1",
+  "scripts": {
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "type-check": "turbo type-check",
+    "test": "turbo test",
+    "check": "turbo lint type-check test build",
+    "papyrus:next-version": "node packages/papyrus/scripts/calendar-version-bump.mjs --dry-run",
+    "papyrus:version": "node packages/papyrus/scripts/calendar-version-bump.mjs --apply",
+    "release:next-version": "pnpm papyrus:next-version",
+    "version:bump": "pnpm papyrus:version"
+  },
+  "devDependencies": {
+    "turbo": "^2.8.19",
+    "typescript": "catalog:"
+  },
+  "packageManager": "pnpm@10.34.7",
+  "engines": {
+    "node": ">=22"
+  }
+}
