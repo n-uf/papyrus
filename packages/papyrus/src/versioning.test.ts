@@ -31,16 +31,8 @@ describe("calendar versions (YY.M.R)", () => {
     expect(nextCalendarVersion("26.9.4", day("2026-10-02"), new Set(["26.10.0", "26.10.1"]))).toBe("26.10.2");
   });
 
-  it("never lets a changeset name papyrus (changesets would bump the calendar version as semver)", () => {
-    const dir = path.join(repoRoot, ".changeset");
-    const named = fs
-      .readdirSync(dir)
-      .filter((f) => f.endsWith(".md") && f !== "README.md")
-      .filter((f) => {
-        const frontmatter = fs.readFileSync(path.join(dir, f), "utf8").split("---")[1] ?? "";
-        return PACKAGES.some((name) => new RegExp(`["']${name}["']\\s*:`).test(frontmatter));
-      });
-    // Release papyrus with `pnpm papyrus:version` and a CHANGELOG entry instead.
-    expect(named).toEqual([]);
+  it("uses no changesets (they would bump the calendar version as semver)", () => {
+    // Release with `pnpm papyrus:version` and a CHANGELOG entry instead.
+    expect(fs.existsSync(path.join(repoRoot, ".changeset"))).toBe(false);
   });
 });
