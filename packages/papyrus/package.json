@@ -1,6 +1,6 @@
 {
   "name": "@n-uf/papyrus",
-  "version": "26.11.0",
+  "version": "26.11.1",
   "description": "Documents engine, framework-free: page contract, sheet sizes and print CSS, document registry, and PDF export for documents rendered as HTML and PDF",
   "license": "LicenseRef-PolyForm-Perimeter-1.0.1",
   "type": "module",

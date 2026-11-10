@@ -1,5 +1,9 @@
 # @n-uf/papyrus
 
+## 26.11.1
+
+- Now released from its own repo, [n-uf/papyrus](https://github.com/n-uf/papyrus), to npmjs (with provenance) as well as GitHub Packages. Same code as 26.11.0; the package now ships this CHANGELOG.
+
 ## 26.11.0
 
 - Calendar versions (`YY.M.R`) from now on, like hypr-tiling, doodl and debugsy; `@n-uf/papyrus-react` shares the version. Same code as 0.4.1: `^0.4.x` ranges do not pick this up, so move them to `^26.11.0`.
