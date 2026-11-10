@@ -1,5 +1,9 @@
 # @n-uf/papyrus-react
 
+## 26.11.1
+
+- Now released from its own repo, [n-uf/papyrus](https://github.com/n-uf/papyrus), to npmjs (with provenance) as well as GitHub Packages. Same code as 26.11.0, on `@n-uf/papyrus` ^26.11.1; the package now ships this CHANGELOG.
+
 ## 26.11.0
 
 - Calendar versions (`YY.M.R`) from now on, always the same as `@n-uf/papyrus`'s. Same code as 0.4.0, now on `@n-uf/papyrus` 26.11.0: `^0.4.x` ranges do not pick this up, so move them to `^26.11.0`.
