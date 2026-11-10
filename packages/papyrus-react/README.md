@@ -1,6 +1,6 @@
 # @n-uf/papyrus-react
 
-React components for the [`@n-uf/papyrus`](../papyrus) documents engine: content-free building blocks
+React components for the [`@n-uf/papyrus`](https://github.com/n-uf/papyrus/tree/main/packages/papyrus) documents engine: content-free building blocks
 for documents rendered as HTML and exported as A4 PDF. It contains no brand, copy or document content;
 the documents package supplies those.
 
@@ -48,7 +48,7 @@ Up to 0.3, these components were part of `@n-uf/papyrus`. Replace `@n-uf/papyrus
 ## Versions
 
 Calendar versions `YY.M.R`, always the same as `@n-uf/papyrus`'s (see its
-[versioning policy](../../_agent/versioning-policy.md)). Releases up to `0.4.0` used semver.
+[versioning policy](https://github.com/n-uf/papyrus/blob/main/_agent/versioning-policy.md)). Releases up to `0.4.0` used semver.
 
 ## License
 

@@ -25,7 +25,7 @@ release, so `/core` never shipped; consumers go through one breaking change (com
 Papyrus's real value is the **page contract**: fixed sheets, the print CSS that keeps them one sheet per
 PDF page, the page-count check, and the Playwright exporter. Today that contract is spread across the
 React package and hard-codes A4 in four places, so a document that is not a React app, or not A4, cannot
-use it. The first such document already exists: the résumé at `/opt/projects/personal/resume` (plain
+use it. The first such document already exists: the résumé (plain
 HTML, US-Letter sheets, printed by headless Chrome from `build.sh`).
 
 ## What is React-free today, and what is not
@@ -190,7 +190,7 @@ Small additions so the exporter handles any sheet size and plain-HTML documents:
 ## What only the operator can do
 
 - **Package access for the résumé.** `@n-uf/papyrus` is restricted on GitHub Packages. Pick one:
-  - Simplest, local only: in the résumé, `pnpm add file:/opt/projects/n-uf/angiospermae/packages/papyrus`
+  - Simplest, local only: in the résumé, `pnpm add file:<angiospermae checkout>/packages/papyrus`
     (or `link:`). No token needed.
   - Registry install: add `@n-uf:registry=https://npm.pkg.github.com` to the résumé's `.npmrc` and
     a GitHub token with `read:packages` in `~/.npmrc`
