@@ -1,5 +1,9 @@
 # @n-uf/papyrus
 
+## 26.11.2
+
+- The package's homepage is now its overview page, [n-uf.com/papyrus](https://n-uf.com/papyrus). Same code as 26.11.1.
+
 ## 26.11.1
 
 - Now released from its own repo, [n-uf/papyrus](https://github.com/n-uf/papyrus), to npmjs (with provenance) as well as GitHub Packages. Same code as 26.11.0; the package now ships this CHANGELOG.
