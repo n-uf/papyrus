@@ -38,6 +38,16 @@ export {
 } from "./doc-registry";
 
 // =============================================================================
+// VIEWER HELPERS
+// =============================================================================
+// What a document viewer needs around a registered document: one page of it,
+// its exported PDF, and the markup the PDF export checks.
+
+export { DOC_PAGE_SIZE, DocPageSlice, type DocPageSliceProps } from "./doc-page";
+export { DocPrintView, type DocPrintViewProps } from "./print-view";
+export { useDocPdf, type DocPdf, type DocPdfState, type UseDocPdfOptions } from "./use-doc-pdf";
+
+// =============================================================================
 // TYPES
 // =============================================================================
 
