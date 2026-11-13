@@ -1,4 +1,4 @@
-import { SHEETS, sheetCss } from "@n-uf/papyrus";
+import { CONTAINER_CLASS, PAGE_CLASS, SHEETS, sheetCss } from "@n-uf/papyrus";
 
 /**
  * Print fixes for papyrus' own blocks (panels, carved text, Tailwind rounded
@@ -86,7 +86,29 @@ export const blockPrintStyles = `
 `;
 
 /**
- * Print-optimized CSS for PDF-ready documents: A4 sheets (from core's
- * {@link sheetCss}) plus the print fixes for papyrus' blocks.
+ * Screen framing for `DocPageSlice` (`@n-uf/papyrus-react/dossier`): under
+ * its `data-papyrus-slice` root a page is just the page, without the grey
+ * canvas, margins and shadow `sheetCss` gives a stack of sheets on screen.
  */
-export const printStyles = sheetCss(SHEETS.A4) + blockPrintStyles;
+export const sliceScreenStyles = `
+  @media screen {
+    [data-papyrus-slice] .${CONTAINER_CLASS} {
+      background: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      min-height: 0 !important;
+    }
+
+    [data-papyrus-slice] .${PAGE_CLASS} {
+      margin: 0 !important;
+      box-shadow: none !important;
+    }
+  }
+`;
+
+/**
+ * Print-optimized CSS for PDF-ready documents: A4 sheets (from core's
+ * {@link sheetCss}), the screen framing of page slices, plus the print fixes
+ * for papyrus' blocks.
+ */
+export const printStyles = sheetCss(SHEETS.A4) + sliceScreenStyles + blockPrintStyles;
