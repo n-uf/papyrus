@@ -82,6 +82,8 @@ describe("DocPageSlice", () => {
     expect(el.style.width).toBe(`${DOC_PAGE_SIZE.width}px`);
     expect(el.style.height).toBe(`${DOC_PAGE_SIZE.height}px`);
     expect(el.style.position).toBe("absolute");
+    // clipped to one page's room, so the other pages do not spill below it before they are hidden; a host may override that
+    expect(el.style.overflow).toBe("hidden");
     expect(DOC_PAGE_SIZE).toEqual({ width: 794, height: 1123 });
   });
 
