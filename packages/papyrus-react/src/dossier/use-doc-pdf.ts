@@ -15,7 +15,9 @@ export interface UseDocPdfOptions {
   /**
    * Query parameters that belong to the host, not to the document: they are
    * left out of the render request (the rest of the page's query is the
-   * reader's document parameters).
+   * reader's document parameters). `print`, papyrus' own parameter, is always
+   * left out: the Vite plugin counts any parameter as "with parameters" and
+   * would print a fresh PDF instead of serving the committed one.
    */
   ignore?: readonly string[];
   /** File name of the downloaded PDF. Default `<id>.pdf`. */
@@ -54,9 +56,16 @@ function pdfUrl(basePath: string, docId: string): string {
  * 200, so the status alone proves nothing (papyrus' dev plugin answers HEAD
  * from the committed file).
  *
+ * A document with a committed PDF (`available`) is downloaded with a plain link to that file; `render` is the way to a PDF
+ * for a document without one, whose values the reader sets (a calculator): it prints one with the page's document parameters.
+ *
  * @example
- * const pdf = useDocPdf(doc.id, { ignore: ["print", "closed"], fileName: (id) => `acme-${id}.pdf` });
- * <button disabled={!pdf.available || pdf.state === "busy"} onClick={pdf.render}>Download PDF</button>
+ * const pdf = useDocPdf(doc.id, { ignore: ["closed"], fileName: (id) => `acme-${id}.pdf` });
+ * pdf.available ? (
+ *   <a href={`/docs/${doc.id}.pdf`} download={`acme-${doc.id}.pdf`}>Download PDF</a>
+ * ) : (
+ *   <button disabled={pdf.state === "busy"} onClick={pdf.render}>Download PDF</button>
+ * );
  */
 export function useDocPdf(docId: string | null | undefined, options: UseDocPdfOptions = {}): DocPdf {
   const basePath = options.basePath ?? DEFAULT_BASE_PATH;
@@ -90,9 +99,10 @@ export function useDocPdf(docId: string | null | undefined, options: UseDocPdfOp
     () => () => {
       controllerRef.current?.abort();
       controllerRef.current = null;
-      // an aborted render never settles: do not leave its document "busy"
-      // for when the reader comes back to it (a no-op after unmount)
-      setRun((prev) => (prev?.state === "busy" ? null : prev));
+      // an aborted render never settles, and a failed one is not the reader's
+      // news any more: going back to the document starts from "idle" (a no-op
+      // after unmount)
+      setRun((prev) => (prev?.key === key ? null : prev));
     },
     [key],
   );
@@ -110,7 +120,7 @@ export function useDocPdf(docId: string | null | undefined, options: UseDocPdfOp
     try {
       const { ignore = [], fileName = (id: string) => `${id}.pdf` } = optionsRef.current;
       const params = new URLSearchParams(window.location.search);
-      for (const name of ignore) params.delete(name);
+      for (const name of ["print", ...ignore]) params.delete(name);
       const query = params.toString();
       const res = await fetch(`${key}${query ? `?${query}` : ""}`, { signal: controller.signal });
       if (!isPdf(res)) throw new Error(`PDF failed: ${res.status}`);

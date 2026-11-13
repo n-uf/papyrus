@@ -229,6 +229,18 @@ describe("useDocPdf: render", () => {
     expect(latest.state).toBe("failed");
     await mount("other");
     expect(latest.state).toBe("idle");
+    // coming back to the document that failed starts from idle too (not the old "failed")
+    await mount("calc");
+    expect(latest.state).toBe("idle");
+  });
+
+  it("always leaves papyrus' own `print` parameter out of the render request, with or without an ignore list", async () => {
+    answerPdf();
+    await mount("calc");
+    await flush();
+    fetchMock.mockClear();
+    await act(() => latest.render());
+    expect(fetchMock.mock.calls[0]?.[0]).toBe("/docs/calc.pdf?raised=750000&closed=1");
   });
 
   it("drops the result of a render that outlived its document id", async () => {

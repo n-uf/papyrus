@@ -64,11 +64,16 @@ const scale = 200 / DOC_PAGE_SIZE.width;
   <DocPageSlice doc={doc} page={2} style={{ position: "absolute", transform: `scale(${scale})`, transformOrigin: "0 0" }} />
 </div>;
 
-// The PDF: `available` says a file exists; `render` prints one with the reader's document parameters
-const pdf = useDocPdf(docId, { ignore: ["print", "closed"], fileName: (id) => `acme-${id}.pdf` });
-<button disabled={!pdf.available || pdf.state === "busy"} onClick={pdf.render}>
-  {pdf.state === "failed" ? "Failed, retry" : "Download PDF"}
-</button>;
+// The PDF: a committed file when `available` (a plain link), else one printed on request with the
+// reader's document parameters (a document whose values the reader sets, such as a calculator)
+const pdf = useDocPdf(docId, { ignore: ["closed"], fileName: (id) => `acme-${id}.pdf` });
+{pdf.available ? (
+  <a href={`/docs/${docId}.pdf`} download={`acme-${docId}.pdf`}>Download PDF</a>
+) : (
+  <button disabled={pdf.state === "busy"} onClick={pdf.render}>
+    {pdf.state === "busy" ? "Preparing PDF…" : pdf.state === "failed" ? "Try again" : "Download PDF"}
+  </button>
+)}
 ```
 
 - A slice renders the whole document component and shows only its Nth `.pdf-page`: interactive pages
@@ -77,8 +82,10 @@ const pdf = useDocPdf(docId, { ignore: ["print", "closed"], fileName: (id) => `a
   inject them already): its screen rules, keyed on `data-papyrus-slice`, strip the sheet framing.
 - `available` is a HEAD request whose content type must be a PDF, because hosts such as Vercel answer
   unknown paths with `index.html` and status 200. `render()` requests
-  `<basePath>/<id>.pdf?<current query minus ignore>` and downloads the result; it never rejects (a
-  failure sets `state` to `"failed"`), and its result is dropped after unmount or an id change.
+  `<basePath>/<id>.pdf?<current query minus papyrus's own `print` and your `ignore`>` and downloads the
+  result; it is the way to a PDF for a document with no committed file (when `available`, link to the
+  file). It never rejects (a failure sets `state` to `"failed"`), and its result is dropped after
+  unmount or an id change; going back to a document starts from `"idle"`.
 
 ## Moving from `@n-uf/papyrus` 0.3
 

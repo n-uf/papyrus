@@ -88,7 +88,8 @@ export function DocPageSlice({ doc, page, className, style }: DocPageSliceProps)
       ref={ref}
       {...{ [SLICE_ATTR]: "" }}
       className={className}
-      style={{ width: DOC_PAGE_SIZE.width, height: DOC_PAGE_SIZE.height, ...style }}
+      // clipped to one page's room: before the effect hides the others (server render, first paint) they do not spill below the slot
+      style={{ width: DOC_PAGE_SIZE.width, height: DOC_PAGE_SIZE.height, overflow: "hidden", ...style }}
     >
       <DocComponent figures={doc.figures} downloadable={false} />
     </div>
