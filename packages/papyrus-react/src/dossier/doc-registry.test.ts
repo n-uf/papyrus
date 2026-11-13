@@ -45,8 +45,11 @@ describe("docRegistry", () => {
 });
 
 describe("dossier module", () => {
-  it("exports only the content-free registry API", () => {
+  it("exports only the content-free registry API and the viewer helpers", () => {
     expect(Object.keys(dossier).sort()).toEqual([
+      "DOC_PAGE_SIZE",
+      "DocPageSlice",
+      "DocPrintView",
       "createDocRegistry",
       "docRegistry",
       "getDocComponent",
@@ -54,6 +57,7 @@ describe("dossier module", () => {
       "getRegisteredDocIds",
       "hasDoc",
       "registerDoc",
+      "useDocPdf",
     ]);
   });
 });
