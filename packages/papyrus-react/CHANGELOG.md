@@ -1,5 +1,13 @@
 # @n-uf/papyrus-react
 
+## 26.11.3
+
+- `@n-uf/papyrus-react/dossier`: three viewer helpers, so a document viewer needs no plumbing of its own.
+  - `DocPageSlice` draws one page (1-based) of a registered document at its natural A4 size (`DOC_PAGE_SIZE`), interactive pages included; `printStyles` now strips the sheet-stack framing under `data-papyrus-slice`.
+  - `useDocPdf(docId, { basePath, ignore, fileName })` gives `{ available, state, render }` for a document's exported PDF (a HEAD probe by content type; `render()` downloads a PDF rendered with the page's document parameters, minus `print` and your `ignore`).
+  - `DocPrintView` renders a document inside the `data-papyrus-doc` / `data-papyrus-page-count` markup that `papyrus pdf` checks.
+- On `@n-uf/papyrus` 26.11.3 (same code as 26.11.2).
+
 ## 26.11.2
 
 - The package's homepage is now its overview page, [n-uf.com/papyrus](https://n-uf.com/papyrus). Same code as 26.11.1, on `@n-uf/papyrus` ^26.11.2.
