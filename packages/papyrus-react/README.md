@@ -1,6 +1,6 @@
 # @n-uf/papyrus-react
 
-React components for the [`@n-uf/papyrus`](https://github.com/n-uf/papyrus/tree/main/packages/papyrus) documents engine: content-free building blocks
+React components for the [`@n-uf/papyrus`](https://n-uf.com/papyrus) documents engine: content-free building blocks
 for documents rendered as HTML and exported as A4 PDF. It contains no brand, copy or document content;
 the documents package supplies those.
 
