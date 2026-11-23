@@ -1,5 +1,9 @@
 # @n-uf/papyrus-react
 
+## 26.11.4
+
+- npm keywords added, so the package shows up in npm search. Same code as 26.11.3, on `@n-uf/papyrus` 26.11.4.
+
 ## 26.11.3
 
 - `@n-uf/papyrus-react/dossier`: three viewer helpers, so a document viewer needs no plumbing of its own.

@@ -1,5 +1,9 @@
 # @n-uf/papyrus
 
+## 26.11.4
+
+- npm keywords added, so the package shows up in npm search (and in searches for Vite plugins). Same code as 26.11.3.
+
 ## 26.11.3
 
 - No change to the engine: released with `@n-uf/papyrus-react` 26.11.3, which adds the viewer helpers `DocPageSlice`, `useDocPdf` and `DocPrintView`. Same code as 26.11.2.
